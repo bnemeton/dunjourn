@@ -22,55 +22,7 @@ class Map {
         this._engine = new ROT.Engine(this._scheduler);
         //add the player
         this.addEntityAtRandomPosition(player, 0);
-        //add enemies
-        //var enemyTypes = [Fungus, StarvelingSwarm]; //actual enemyTypes
-        var enemyTypes = [Fungus, Moldmunch] //test enemyTypes so you don't fucking die
-        for (var z=0; z<this._depth; z++){
-            for (var i=0; i < 20; i++) {
-                // enemy distribution
-                var RandomEnemy = enemyTypes[Math.floor(Math.random()*enemyTypes.length)]
-               this.addEntityAtRandomPosition(new RandomEnemy(), z);
-            }
-            // console.log(`spawned 20 enemies on floor ${z}`)
-        }
-        //give moldmunches friends... this is not working
-        for (var prop in this._entities){
-            let guy = this._entities[prop]
-            console.log(guy.name); //works as expected...
-            if (guy.name === "moldmunch") {
-                console.log('found a lonely moldmunch')
-                for (let i=0;i<2;i++) {
-                    let tile = this.getRandomEmptyFloorWithinRadius(guy._x, guy._y, guy._z, 2) // how is this not returning anything?
-                    console.log('tile is:' + tile) //never happening. why is the above never returning coords? wait. it's not even returning ''false''?
-                    if (tile) {
-                        console.log('found a spot for a buddy')
-                        let newGuy = new Moldmunch();
-                        newGuy.setX(tile.x);
-                        newGuy.setY(tile.y);
-                        newGuy.setZ(guy._z);
-                        this.addEntity(newGuy);
-                        console.log('added a moldmunch buddy') //never happening, as expected. but why?
-                    }
-                }
-            }
-        }
-        //add normal items
-        var itemTypes = [Food, Pebble];
-        for (var z = 0; z <this._depth; z++) {
-            for (var i = 0; i < 15; i++) {
-                var RandomItem = itemTypes[Math.floor(Math.random()*itemTypes.length)];
-                this.addItemAtRandomPosition(new RandomItem(), z);
-            }
-            // console.log(`spawned 15 items on floor ${z}`)
-        }
-        //add scraps
-        for (var z = 0; z <this._depth; z++) {
-            for (var i = 0; i < 5; i++) {
-                this.addItemAtRandomPosition(new Scrap(), z);
-            }
-            // console.log(`spawned 5 scraps on floor ${z}`)
-        }
-
+        
     }
     getItemsAt(x, y, z) {
         // if (this._items[`${x},${y},${z}`]) {
@@ -173,7 +125,7 @@ class Map {
                 if ((thisFloorTiles[x][y] instanceof FloorTile) && !this.getEntityAt(x, y, z)) {
                     empties.push({
                         x: x,
-                        y:y,
+                        y: y,
                         z: z
                     });
                 }
@@ -183,10 +135,10 @@ class Map {
         // console.log(empties);
 
         var shuffledEmpties = shuffle(empties);
-        // console.log(shuffledEmptyTiles);
+        console.log(shuffledEmpties); //length 0... where did the tiles go wrong, i wonder?
 
         var randFloor = shuffledEmpties.pop();
-        // console.log(randFloor);
+        console.log(randFloor); //undefined...
 
         return {x: randFloor.x, y: randFloor.y, z: randFloor.z};
         // var x; 
@@ -403,40 +355,3 @@ class Map {
     }
 
 };
-//dig??
-// Game.Map.prototype.dig = function(x, y) {
-//     // If the tile is diggable, update it to a floor
-//     if (this.getTile(x, y).isDiggable()) {
-//         this._tiles[x][y] = Game.Tile.floorTile;
-//     }
-// }
-
-//random floor tile
-// Game.Map.prototype.getRandomFloorPosition = function() {
-//     // Randomly generate a tile which is a floor
-//     var x, y;
-//     do {
-//         x = Math.floor(Math.random() * this._width);
-//         y = Math.floor(Math.random() * this._width);
-//     } while(this.getTile(x, y) != Game.Tile.floorTile);
-//     return {x: x, y: y};
-// }
-
-// // Standard getters
-// // Game.Map.prototype.getWidth = function() {
-// //     return this._width;
-// // };
-// Game.Map.prototype.getHeight = function() {
-//     return this._height;
-// };
-
-// Gets the tile for a given coordinate set
-// Game.Map.prototype.getTile = function(x, y) {
-//     // Make sure we are inside the bounds. If we aren't, return
-//     // null tile.
-//     if (x < 0 || x >= this._width || y < 0 || y >= this._height) {
-//         return Game.Tile.nullTile;
-//     } else {
-//         return this._tiles[x][y] || Game.Tile.nullTile;
-//     }
-// };

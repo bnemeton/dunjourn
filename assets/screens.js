@@ -350,11 +350,21 @@ Game.Screen.playScreen = {
         var width = 128;
         var height = 64;
         var depth = 1;
-        //create map from tiles and player
-        var tiles = new Builder(width, height, depth).getTiles();
+        //retrieve the tiles from the level object
+        // console.log(level); //this works fine, level is available
+        var tiles = new Builder(level.tiles).getTiles();
+        console.log(tiles);
         this._player = new Player();
         this._map = new Map(tiles, this._player);
         this._map.getEngine().start();
+        
+
+
+        // //this is the old map builder that used dynamic level generation
+        // var tiles = new Builder(width, height, depth).getTiles();
+        // this._player = new Player();
+        // this._map = new Map(tiles, this._player);
+        // this._map.getEngine().start();
     },
     exit: function() { console.log("Exited play screen."); },
     //move screen/camera/thing
