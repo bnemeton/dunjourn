@@ -354,7 +354,7 @@ Game.Screen.playScreen = {
         // console.log(levelArray); //fixed
 
         var tiles = new Builder(levelArray).getTiles();
-        // console.log(tiles); //works now
+        console.log(tiles); //oddly all wall???
         this._player = new Player();
         this._map = new Map(tiles, this._player);
         this._map.getEngine().start();

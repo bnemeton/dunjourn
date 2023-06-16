@@ -5,17 +5,32 @@ var buildFloor = function (tiles) {
     for (var x = 0; x < tiles.length; x++) {
         var row = [];
         for (var y = 0; y < tiles[x].length; y++) {
-            if (tiles[x][y] == ".") {
+        //     if (tiles[x][y] == ".") {
+        //         row.push(new FloorTile());
+        //     } else if (tiles[x][y] == "#") {
+        //         row.push(new WallTile());
+        //     }
+        // }
+        switch (tiles[x][y]) {
+            case ".":
                 row.push(new FloorTile());
-            } else if (tiles[x][y] == "#") {
+                break;
+            case "#":
                 row.push(new WallTile());
-            }
+                break;
+            case ">":
+                row.push(new StairDown());
+                break;
+            case "<":
+                row.push(new StairUp());
+                break;
         }
         floor.push(row);
     }
     return floor;
 
 }
+};
 
 class Builder {
     constructor(tiles) {

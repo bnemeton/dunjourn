@@ -8,18 +8,23 @@
 // };
 
 //function to split text file into array of rows, each of which is a row of characters
-var splitLevel = function (level) {
+var splitLevel = function (dungeon) {
     // var levelText = readLevel(level);
-    let levelArray = [];
-    var rows = level.split("\n");
-    for (var i = 0; i < rows.length; i++) {
-        let splitRow = [];
-        for (var j = 0; j < rows[i].length; j++) {
-            splitRow.push(rows[i][j]);
-        }
-        levelArray.push(splitRow);
+    let dungeonArray = [];
+    let floors = dungeon.split("X");
+    console.log(floors);
+    for (var i = 0; i < floors.length; i++) {
+        let rows = floors[i].split("\n");
+        let levelArray = [];
+        for (var j = 0; j < rows.length; j++) {
+            let splitRow = [];
+            for (var k = 0; k < rows[j].length; k++) {
+                splitRow.push(rows[j][k]);
+            }
+            levelArray.push(splitRow);
+        };
+        dungeonArray.push(levelArray);
     };
-    // console.log(levelArray);
-    let dungeonArray = [levelArray]
+    console.log(dungeonArray)
     return dungeonArray;
 }
