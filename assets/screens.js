@@ -34,6 +34,9 @@ Game.Screen.startScreen = {
         displays.main.drawText(32, 6, foreColor + "DUNJOURN 0.0.1");
         displays.main.drawText(32, 8, ashColor + "press [enter] to start");
         displays.main.drawText(22, 12, ashColor + `
+                                            there's no game here yet! still working on initial setup.
+
+
                                             go to /about.html for what the hell is going on,
                                             & a reference of commands!
 
@@ -341,13 +344,17 @@ Game.Screen.playScreen = {
     enter: function() {
         // console.log("entering play screen..."); 
         // var map = []; //old map array
-        var width = 128;
-        var height = 64;
-        var depth = 1;
+        // var width = 128;
+        // var height = 64;
+        // var depth = 1;
         //retrieve the tiles from the level object
         // console.log(level); //this works fine, level is available
-        var tiles = new Builder(level.tiles).getTiles();
-        console.log(tiles);
+        let levelArray = splitLevel(blankLevel);
+        // console.log(blankLevel) //works fine
+        // console.log(levelArray); //fixed
+
+        var tiles = new Builder(levelArray).getTiles();
+        // console.log(tiles); //works now
         this._player = new Player();
         this._map = new Map(tiles, this._player);
         this._map.getEngine().start();
