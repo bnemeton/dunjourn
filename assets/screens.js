@@ -349,12 +349,12 @@ Game.Screen.playScreen = {
         // var depth = 1;
         //retrieve the tiles from the level object
         // console.log(level); //this works fine, level is available
-        let levelArray = splitLevel(blankLevel);
+        let dungeonArray = splitLevel(blankLevel);
         // console.log(blankLevel) //works fine
         // console.log(levelArray); //fixed
 
-        var tiles = new Builder(levelArray).getTiles();
-        console.log(tiles); //oddly all wall???
+        var tiles = new Builder(dungeonArray).getTiles();
+        // console.log(tiles); //empty now! gah!
         this._player = new Player();
         this._map = new Map(tiles, this._player);
         this._map.getEngine().start();

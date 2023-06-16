@@ -5,8 +5,8 @@ class Map {
         // on the length of the dimensions of
         // the tiles array
         this._depth = tiles.length;
-        this._width = tiles[0].length;
-        this._height = tiles[0][0].length;
+        this._width = tiles[0][0].length;
+        this._height = tiles[0].length;
         this._explored = new Array(this._depth);
         this.setupExploredArray();
         //object of items on map
@@ -78,11 +78,11 @@ class Map {
     }
     setupExploredArray() {
         for (var z = 0; z < this._depth; z++) {
-            this._explored[z] = new Array(this._width);
+            this._explored[z] = new Array(this._height);
             for (var x = 0; x < this._width; x++) {
-                this._explored[z][x] = new Array(this._height);
+                this._explored[z][y] = new Array(this._width);
                 for (var y = 0; y < this._height; y++) {
-                    this._explored[z][x][y] = false;
+                    this._explored[z][y][x] = false;
                 }
             }
         }
@@ -90,13 +90,13 @@ class Map {
     setExplored(x, y, z, state) {
         // Only update if the tile is within bounds
         if (!(this.getTile(x, y, z) instanceof NullTile)) {
-            this._explored[z][x][y] = state;
+            this._explored[z][y][x] = state;
         }
     }
     isExplored(x, y, z) {
         // Only return the value if within bounds
         if (!(this.getTile(x, y, z) instanceof NullTile)) {
-            return this._explored[z][x][y];
+            return this._explored[z][y][x];
         } else {
             return false;
         }
@@ -108,7 +108,7 @@ class Map {
     dig(x, y, z) {
         // If the tile is diggable, update it to a floor
         if (this.getTile(x, y, z).isDiggable) {
-            this._tiles[z][x][y] = new FloorTile();
+            this._tiles[z][y][x] = new FloorTile();
         }
     }
     getRandomFloorPosition(z) {
@@ -122,7 +122,7 @@ class Map {
         for (var x=0; x < thisFloorTiles.length; x++) {
             let column = thisFloorTiles[x];
             for(var y=0; y < column.length; y++) {
-                if ((thisFloorTiles[x][y] instanceof FloorTile) && !this.getEntityAt(x, y, z)) {
+                if ((thisFloorTiles[y][x] instanceof FloorTile) && !this.getEntityAt(x, y, z)) {
                     empties.push({
                         x: x,
                         y: y,
@@ -165,7 +165,7 @@ class Map {
             return new NullTile();
         } else {
             // console.log(z);
-            return this._tiles[z][x][y];
+            return this._tiles[z][y][x];
         }
     }
     getEngine() {

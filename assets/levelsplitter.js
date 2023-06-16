@@ -12,7 +12,7 @@ var splitLevel = function (dungeon) {
     // var levelText = readLevel(level);
     let dungeonArray = [];
     let floors = dungeon.split("X");
-    console.log(floors);
+    // console.log(floors); // seems fine
     for (var i = 0; i < floors.length; i++) {
         let rows = floors[i].split("\n");
         let levelArray = [];
@@ -25,6 +25,6 @@ var splitLevel = function (dungeon) {
         };
         dungeonArray.push(levelArray);
     };
-    console.log(dungeonArray)
+    // console.log(dungeonArray)// this is fine/doesn't show the mirroring/rotation of the built level
     return dungeonArray;
 }

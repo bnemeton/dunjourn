@@ -1,41 +1,45 @@
 
-var buildFloor = function (tiles) {
-    //iterate through the tiles and create a FloorTile when the tile is a . or a WallTile when the tile is a #
-    var floor = [];
-    for (var x = 0; x < tiles.length; x++) {
-        var row = [];
-        for (var y = 0; y < tiles[x].length; y++) {
-        //     if (tiles[x][y] == ".") {
-        //         row.push(new FloorTile());
-        //     } else if (tiles[x][y] == "#") {
-        //         row.push(new WallTile());
-        //     }
-        // }
-        switch (tiles[x][y]) {
+var buildRow = function (row) {
+    // console.log(row); //looks fine
+    //iterate through the  and create a FloorTile when the tile is a . or a WallTile when the tile is a # or a StairDown when the tile is a > or a StairUp when the tile is a <
+    let rowTiles = [];
+    for (var x = 0; x < row.length; x++) {
+        // console.log(row[x]) //duh whoops
+        //switch statement
+        switch ([row[x]]) {
             case ".":
-                row.push(new FloorTile());
+                rowTiles.push(new FloorTile());
                 break;
             case "#":
-                row.push(new WallTile());
+                rowTiles.push(new WallTile());
                 break;
             case ">":
-                row.push(new StairDown());
+                rowTiles.push(new StairDown());
                 break;
             case "<":
-                row.push(new StairUp());
+                rowTiles.push(new StairUp());
                 break;
         }
-        floor.push(row);
+    }
+    console.log(rowTiles); //all empty now.... so something is afoot in buildRow
+    return rowTiles;
+}
+
+
+var buildFloor = function (tiles) {
+    // console.log(tiles); // seems correct, which i would expect
+    var floor = [];
+    for (var y = 0; y < tiles.length; y++) {
+        floor.push(buildRow(tiles[y]));
     }
     return floor;
 
 }
-};
 
 class Builder {
     constructor(tiles) {
-        this._width = tiles[0].length;
-        this._height = tiles[0][0].length;
+        this._width = tiles[0][0].length;
+        this._height = tiles[0].length;
         this._depth = tiles.length;
         this._tiles = [];
 
