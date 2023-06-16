@@ -38,15 +38,9 @@ Game.Screen.startScreen = {
                                             & a reference of commands!
 
                                             go to /notes.html for a list of release notes and recent additions!
-                                            
-                                            an actual page with both the game & instructions
-                                            & commands coming soon, along with actual basic 
-                                            QoL features!
                                             `)
         displays.text.drawText(0, 0, ashColor + `
-        You were perhaps a scholar--in one way or another you came upon the knowledge that in a certain place, a community of disciples of fire magic had long ago gathered together to pool their discoveries and attain deeper mystical understanding of fire. This community they founded, this cenobium of fire, sought ever-deeper the mysteries of the flame. But that was long ago, and their existence is known but to a few--most of these stay away. You descended into the caves leading to the cloistered community, but the path ahead is less certain. 
-        
-        Message log will appear here.`)
+        Messages and combat log will appear here.`)
     },
     handleInput: function(inputType, inputData) {
         // when [enter] is pressed, go to the play screen
