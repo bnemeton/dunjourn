@@ -6,7 +6,7 @@ var buildRow = function (row) {
     for (var x = 0; x < row.length; x++) {
         // console.log(row[x]) //duh whoops
         //switch statement
-        switch ([row[x]]) {
+        switch (row[x]) {
             case ".":
                 rowTiles.push(new FloorTile());
                 break;
