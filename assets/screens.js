@@ -7,16 +7,16 @@
 Game.Screen = {};
 
 var fg = ROT.Color.toRGB([
-    200,
-    50,
-    50
+    31,
+    207,
+    142
 ]);
 var bg = ROT.Color.toRGB([
     0,
     0,
     0
 ]);
-var fireColor = "%c{" + fg + "}%b{" + bg + "}";
+var foreColor = "%c{" + fg + "}%b{" + bg + "}";
 
 fg = ROT.Color.toRGB([
     200,
@@ -31,10 +31,10 @@ Game.Screen.startScreen = {
     enter: function() {console.log('entered start screen...')},
     exit: function() {console.log('exited start screen.')},
     render: function(displays) {
-        displays.main.drawText(32, 6, fireColor + "~ ^ ~ FLAMECANT ~ ^ ~");
+        displays.main.drawText(32, 6, foreColor + "DUNJOURN 0.0.1");
         displays.main.drawText(32, 8, ashColor + "press [enter] to start");
         displays.main.drawText(22, 12, ashColor + `
-                                            go to /help.html for basic instructions,
+                                            go to /about.html for what the hell is going on,
                                             & a reference of commands!
 
                                             go to /notes.html for a list of release notes and recent additions!

@@ -1,5 +1,6 @@
 body {
     background-color: black;
+    color: lightseagreen;
 
 }
 
@@ -28,4 +29,20 @@ canvas {
   body:hover #tooltip {
     /* display: block; */
     border: 1px solid white;
+  }
+
+  h1 {
+    color:aquamarine;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .textbox {
+    padding: 3% 5%;
+    justify-content: center;
+    width: 30%;
+    font-size: larger;
+  }
+
+  a {
+    color: aquamarine;
   }
