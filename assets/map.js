@@ -79,9 +79,9 @@ class Map {
     setupExploredArray() {
         for (var z = 0; z < this._depth; z++) {
             this._explored[z] = new Array(this._height);
-            for (var x = 0; x < this._width; x++) {
+            for (var y = 0; y < this._height; y++) {
                 this._explored[z][y] = new Array(this._width);
-                for (var y = 0; y < this._height; y++) {
+                for (var x = 0; x < this._height; x++) {
                     this._explored[z][y][x] = false;
                 }
             }
