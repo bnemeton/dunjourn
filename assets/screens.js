@@ -37,7 +37,7 @@ Game.Screen.startScreen = {
                                             go to /about.html for what the hell is going on,
                                             & a reference of commands!
 
-                                            go to /notes.html for a list of release notes and recent additions!
+                                            go to /outline.html for planned features!
                                             `)
         displays.text.drawText(0, 0, ashColor + `
         Messages and combat log will appear here.`)
