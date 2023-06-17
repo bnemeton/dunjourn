@@ -8,7 +8,7 @@ class Player extends Entity {
             canDig: true,
             bagSlots: 26
         });
-        this.name = 'branded';
+        this.name = 'player';
         this.hp = 10;
         this.maxHp = 10;
         this.mortal = true;

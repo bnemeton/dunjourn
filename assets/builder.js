@@ -5,8 +5,9 @@ var buildRow = function (row) {
     let rowTiles = [];
     for (var x = 0; x < row.length; x++) {
         // console.log(row[x]) //duh whoops
+        let glyph = row[x];
         //switch statement
-        switch (row[x]) {
+        switch (glyph) {
             case ".":
                 rowTiles.push(new FloorTile());
                 break;
@@ -20,8 +21,26 @@ var buildRow = function (row) {
                 rowTiles.push(new StairUp());
                 break;
         }
+        //if none of the standard tiles, check enemies for a match
+        if (glyph != "." && glyph != "#" && glyph != ">" && glyph != "<") {
+            // console.log(glyph+` found in map.`) // works fine
+            for (var enemy in enemies) {
+                console.log(enemy) //just the word goblin instead of the object? if i ask for a property it's always undefined.
+                if (enemy.char == glyph) {
+                    // console.log(`found an ${enemy.name}`); //never firing....
+                    //create enemy and set position
+                    let newEnemy = new Enemy(enemy);
+                    newEnemy.setPosition(x, y, z);
+                    // push floortile and add enemy to enemy array
+                    rowTiles.push(new FloorTile());
+                    this._enemies.push(newEnemy);
+                    console.log(`added ${newEnemy.name} to enemy array with position ${newEnemy.getX()}, ${newEnemy.getY()}, ${newEnemy.getZ()}`); //not firing
+                }
+            }
+        };
+
     }
-    console.log(rowTiles); //all empty now.... so something is afoot in buildRow
+    // console.log(rowTiles); //all empty now.... so something is afoot in buildRow
     return rowTiles;
 }
 
@@ -42,6 +61,8 @@ class Builder {
         this._height = tiles[0].length;
         this._depth = tiles.length;
         this._tiles = [];
+        this._enemies = [];
+        this._items = [];
 
         // build dungeon
         for (var z = 0; z < this._depth; z++) {

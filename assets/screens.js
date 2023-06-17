@@ -358,6 +358,8 @@ Game.Screen.playScreen = {
         this._player = new Player();
         this._map = new Map(tiles, this._player);
         this._map.getEngine().start();
+        // add enemies from the enemy array
+        
         
 
 

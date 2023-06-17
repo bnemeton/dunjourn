@@ -135,10 +135,10 @@ class Map {
         // console.log(empties);
 
         var shuffledEmpties = shuffle(empties);
-        console.log(shuffledEmpties); //length 0... where did the tiles go wrong, i wonder?
+        // console.log(shuffledEmpties); //length 0... where did the tiles go wrong, i wonder?
 
         var randFloor = shuffledEmpties.pop();
-        console.log(randFloor); //undefined...
+        // console.log(randFloor); //undefined...
 
         return {x: randFloor.x, y: randFloor.y, z: randFloor.z};
         // var x; 
