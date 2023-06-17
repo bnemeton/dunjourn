@@ -1,6 +1,7 @@
 class Enemy extends Entity {
     constructor(properties) {
         super(properties);
+        this.hp = properties['hp'] || 1;
         this.actor = true;
         this.mortal = true;
         this.armor = properties['armor'] || 0;
@@ -13,7 +14,26 @@ class Enemy extends Entity {
         this.wants = properties['wants'] || [];
         this.friends = properties["friends"] || [];
         this.maxSpeed = properties['maxSpeed'] || 1;
+        this.mood = properties['mood'] || "angry";
         
+    }
+    wander() {
+        // this.tryMove(this.getX(), this.getY(), this.getZ()) //stand still
+       // Flip coin to determine if moving by 1 in the positive or negative direction
+       var moveOffset = (Math.round(Math.random()) === 1) ? 1 : -1;
+       // Flip coin to determine if moving in x direction or y direction
+       if (Math.round(Math.random()) === 1) {
+           this.tryMove(this.getX() + moveOffset, this.getY(), this.getZ());
+       } else {
+           this.tryMove(this.getX(), this.getY() + moveOffset, this.getZ());
+       }
+   }
+    act() {
+        switch(this.mood) {
+            case "angry":
+                this.wander();
+                break;          
+        }
     }
     canSee(entity) {
         if (!entity || this.getMap() !== entity.getMap() || this.getZ() !== entity.getZ()) {

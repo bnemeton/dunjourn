@@ -353,16 +353,25 @@ Game.Screen.playScreen = {
         // console.log(blankLevel) //works fine
         // console.log(levelArray); //fixed
 
-        var tiles = new Builder(dungeonArray).getTiles();
+        var dungeon = new Builder(dungeonArray);
         // console.log(tiles); //empty now! gah!
         this._player = new Player();
-        this._map = new Map(tiles, this._player);
+        this._map = new Map(dungeon.getTiles(), this._player);
         this._map.getEngine().start();
-        // add enemies from the enemy array
-        
-        
-
-
+        // add enemies from dungeon enemies
+        // console.log(dungeon._enemies); //this is fine
+        dungeon._enemies.forEach(enemy => {
+            //create new enemy of appropriate type
+            // console.log(`attempting to create a(n) ${enemy.type} at ${enemy.x},${enemy.y} on dungeon floor ${(enemy.z)+1}`); //works fine now
+            var newEnemy = new Enemy(enemies[enemy.type]);
+            // console.log(newEnemy.name); //seems to create a real enemy, not sure why rot.js is tripping up
+            //set enemy position
+            newEnemy.setX(enemy.x);
+            newEnemy.setY(enemy.y);
+            newEnemy.setZ(enemy.z);
+            //add enemy to map
+            this._map.addEntity(newEnemy);
+        })
         // //this is the old map builder that used dynamic level generation
         // var tiles = new Builder(width, height, depth).getTiles();
         // this._player = new Player();

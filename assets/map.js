@@ -1,5 +1,7 @@
 class Map {
     constructor(tiles, player) {
+        // console.log(tiles); //undefined, bc it's undefined from the builder
+    
         this._tiles = tiles;
         // cache the width and height based
         // on the length of the dimensions of

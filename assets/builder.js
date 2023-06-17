@@ -2,6 +2,8 @@
 var buildRow = function (row) {
     // console.log(row); //looks fine
     //iterate through the  and create a FloorTile when the tile is a . or a WallTile when the tile is a # or a StairDown when the tile is a > or a StairUp when the tile is a <
+    let results = [];
+    let rowEnemies = [];
     let rowTiles = [];
     for (var x = 0; x < row.length; x++) {
         // console.log(row[x]) //duh whoops
@@ -25,50 +27,80 @@ var buildRow = function (row) {
         if (glyph != "." && glyph != "#" && glyph != ">" && glyph != "<") {
             // console.log(glyph+` found in map.`) // works fine
             for (var enemy in enemies) {
-                console.log(enemy) //just the word goblin instead of the object? if i ask for a property it's always undefined.
-                if (enemy.char == glyph) {
+                // console.log(enemies[enemy]) //ah for in iterates over the keys, not the values, whoops
+                let thisEnemy = enemies[enemy];
+                if (thisEnemy.char == glyph) {
                     // console.log(`found an ${enemy.name}`); //never firing....
                     //create enemy and set position
-                    let newEnemy = new Enemy(enemy);
-                    newEnemy.setPosition(x, y, z);
+                    let newEnemy = new Enemy(thisEnemy);
                     // push floortile and add enemy to enemy array
                     rowTiles.push(new FloorTile());
-                    this._enemies.push(newEnemy);
-                    console.log(`added ${newEnemy.name} to enemy array with position ${newEnemy.getX()}, ${newEnemy.getY()}, ${newEnemy.getZ()}`); //not firing
+                    rowEnemies.push(
+                        {
+                        type: `${newEnemy.name}`,
+                        x: x
+                        }
+                    );
+                    // console.log(`added ${newEnemy.name} to enemy array with position `); 
                 }
             }
         };
 
     }
     // console.log(rowTiles); //all empty now.... so something is afoot in buildRow
-    return rowTiles;
+    results.push(rowTiles);
+    results.push(rowEnemies);
+    return results;
 }
 
 
 var buildFloor = function (tiles) {
     // console.log(tiles); // seems correct, which i would expect
-    var floor = [];
+    let results = [];
+    var floorTiles = [];
+    var floorEnemies = [];
     for (var y = 0; y < tiles.length; y++) {
-        floor.push(buildRow(tiles[y]));
+        let builtRow = buildRow(tiles[y]);
+        let rowTiles = builtRow[0];
+        let rowEnemies = builtRow[1];
+        floorTiles.push(rowTiles);
+        // add y position to each enemy in the returned array
+        for (var i = 0; i < rowEnemies.length; i++) {
+            rowEnemies[i].y = y;
+            floorEnemies.push(rowEnemies[i]);
+        }
     }
-    return floor;
+    results.push(floorTiles);
+    results.push(floorEnemies);
+    return results;
 
 }
 
 class Builder {
-    constructor(tiles) {
-        this._width = tiles[0][0].length;
-        this._height = tiles[0].length;
-        this._depth = tiles.length;
+    constructor(tilemap) {
+        this._width = tilemap[0][0].length;
+        this._height = tilemap[0].length;
+        this._depth = tilemap.length;
         this._tiles = [];
         this._enemies = [];
         this._items = [];
 
+        //console log the enemies object for me right quick
+        // console.log(enemies); //ugh no of course it's fine
         // build dungeon
         for (var z = 0; z < this._depth; z++) {
             // build each floor of the dungeon
-            this._tiles.push(buildFloor(tiles[z]));
+            let floor = buildFloor(tilemap[z]);
+            // console.log(`floor tiles: ${floor[0]}`); //fixed
+            // console.log(`floor enemies: ${floor[1]}`); //fixed
+            this._tiles.push(floor[0]);
+            //set enemies z position to this floor
+            for (var i = 0; i < floor[1].length; i++) {
+                floor[1][i].z = z;
+                this._enemies.push(floor[1][i]);
+            }
         }
+        // console.log(this._tiles); //why is this undefined?
     }
 
     getTiles() {
