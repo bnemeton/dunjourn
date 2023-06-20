@@ -500,16 +500,24 @@ Game.Screen.playScreen = {
                         let lightData = this._map.getLightData();
                         // console.log(lightData) //always empty objects, so no light data getting set
                         let lightColor = lightData[currentDepth][x + ',' + y];
-                        // console.log(`lightData at ${x},${y}:` + lightColor) //undefined, bc there's no lightdata for this tile presumably?
+                      
+                            // console.log(`lightData at ${x},${y}:` + lightColor) //undefined, bc there's no lightdata for this tile presumably?
                         // console.log(`here's the lightColor for this tile: ${lightColor}`)
-                        foreground = ROT.Color.toHex(ROT.Color.multiply(baseColor, lightColor)); //getting error "a[e] is undefined" somewhere in rot.min.js
+                        let litColor = ROT.Color.multiply(baseColor, lightColor);
+                        if (litColor[0]+litColor[1]+litColor[2] < 60) {
+                            litColor = [20, 20, 20]
+                        }
+                        foreground = ROT.Color.toHex(litColor); //getting error "a[e] is undefined" somewhere in rot.min.js
+                        
                         // foreground = baseColor;
+                        
+                        
                         background = glyph.getBackground();
                     } else {
                         // Since the tile was previously explored but is not 
                         // visible, we want to change the foreground color to
                         // dark gray.
-                        foreground = 'rgb(10,10,10';
+                        foreground = 'rgb(20,20,20)';
                     }
                     if (this.highlightedTile.x === x && this.highlightedTile.y === y) {
                         //console.log(`rendering selected tile at ${glyph.x},${glyph.y}`)

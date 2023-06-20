@@ -16,7 +16,7 @@ class Player extends Entity {
         this.damage = 1;
         this.armor = 0;
         this.luck = 1.0;
-        this.sight = 10;
+        this.sight = 999;
         this.alive = true;
     }
     getHp() {
