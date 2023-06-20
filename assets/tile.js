@@ -15,7 +15,7 @@ class FloorTile extends Tile {
     constructor() {
         super({
             char: '.',
-            fg: 'darkslategrey',
+            fg: '#609494',
             isWalkable: true,
             text: 'This is open floor.'
         });
@@ -32,7 +32,7 @@ class WallTile extends Tile {
             fg: 'peachpuff',
             isDiggable: true,
             isOpaque: true,
-            text: "This is a wall of solid stone. You can currently dig through these, for some reason."
+            text: "This is a wall of solid stone. You can currently dig through these, for ease-of-testing purposes."
         });
         // this.isOpaque = true;
         // this.char = '#',

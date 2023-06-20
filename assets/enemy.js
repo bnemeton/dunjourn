@@ -29,6 +29,7 @@ class Enemy extends Entity {
        }
    }
     act() {
+        //TODO implement a mood or behavior system
         switch(this.mood) {
             case "angry":
                 this.wander();

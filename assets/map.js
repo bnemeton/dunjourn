@@ -11,6 +11,23 @@ class Map {
         this._height = tiles[0].length;
         this._explored = new Array(this._depth);
         this.setupExploredArray();
+        //array of arrays of lights
+        this._lights = [
+        //center light for testing purposes
+            [
+                {
+                x: 32,
+                y: 32,
+                color: [255, 255, 255]
+                }
+            ]
+        ];
+        //lightData
+        this._lightData = [];
+        //add empty lightdata object for each floor
+        for (var z = 0; z < this._depth; z++) {
+            this._lightData.push({});
+        }
         //object of items on map
         this._items = {};
         //object of entities on map
@@ -26,6 +43,16 @@ class Map {
         this.addEntityAtRandomPosition(player, 0);
         
     }
+    getLights() {
+        return this._lights;
+    }
+    getLightData() {
+        return this._lightData;
+    }
+    setLightData(lightData) {
+        this._lightData = lightData;
+    }
+
     getItemsAt(x, y, z) {
         // if (this._items[`${x},${y},${z}`]) {
         //     console.log(this._items[`${x},${y},${z}`])
@@ -63,8 +90,9 @@ class Map {
     };
     setupFOV() {
         var map = this;
+        
         for (var z = 0; z < this._depth; z++) {
-               
+           
             let whatever = function() { 
                 var depth = z;
                 map._fov.push(
@@ -75,8 +103,38 @@ class Map {
                 ))
                 }
             whatever();
+            //generate dark/empty lightData
+            for (var y = 0; y < this._height; y++) {
+                for (var x = 0; x < this._width; x++) {
+                    var key = `${x},${y}`;
+                    map._lightData[z][key] = [10, 10, 10];
+                }
+            }
+
+             // lightData setup
+             var lighting = new ROT.Lighting();
+             lighting.setFOV(this._fov[z]);
+             function lightingCallback(x, y, color) {
+                 var key = `${x},${y}`;
+                 map._lightData[z][key] = color;
+                //  console.log("lighting callback called")
+                 
+             }
+             for (let i = 0; i < this._lights.length; i++) {
+                 lighting.setLight(this._lights[i].x, this._lights[i].y, this._lights[i].color);
+             }
+             lighting.compute(lightingCallback);
         }
         // console.log(map._fov)
+    };
+    addLight(x, y, z, color) {
+        let light = new Light({x: x, y: y, color: color});
+        if (this._lights[z]) {
+            this._lights[z].push(light);
+        } else {
+            this._lights[z] = [light];
+        }
+
     }
     setupExploredArray() {
         for (var z = 0; z < this._depth; z++) {

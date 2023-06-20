@@ -419,11 +419,32 @@ Game.Screen.playScreen = {
             this._player.getX(), this._player.getY(),
             this._player.getSightRadius(),
             function(x, y, radius, visbility) {
-                visibleCells[`${x},${y}`] = true;
-                // Mark cell as explored
-                map.setExplored(x, y, currentDepth, true);
+                if(visbility) {
+                    visibleCells[`${x},${y}`] = true;
+                    // Mark cell as explored
+                    map.setExplored(x, y, currentDepth, true);
+                }
+
+
+               
             });
         this.visibleCells = visibleCells;
+        var lightData = this._map.getLightData();
+        var lighting = new ROT.Lighting()
+        lighting.setFOV(this._map.getFOV(currentDepth));
+        var lights = this._map.getLights()[currentDepth];
+        for (var x = 0; x < lights.length; x++) {
+            lighting.setLight(lights[x].x, lights[x].y, lights[x].color);
+        }
+        function lightingCallback(x, y, color) {
+            var key = `${x},${y}`;
+            lightData[currentDepth][key] = color;
+            console.log("lighting callback called")
+            
+        }
+        lighting.compute(lightingCallback);
+
+
         // console.log(visibleCells);
 
         // Iterate through all visible map cells
@@ -471,14 +492,24 @@ Game.Screen.playScreen = {
                             glyph = map.getEntityAt(x, y, currentDepth);
                         }
                         // Update the foreground color in case our glyph changed
-                        // console.log(`here's the glyph's foreground: ${glyph._foreground}`) // getForeground() ""not a function""
-                        foreground = glyph.getForeground(); //not a function...?
+                        // console.log(glyph.getForeground()) //this is fine
+                        let baseColor = ROT.Color.fromString(glyph.getForeground());
+                        // console.log(baseColor) //works fine/color has been converted`
+                        // multiply baseColor by lightData for this tile
+                        // console.log(`here's the lightData for this tile: ${lightData[currentDepth][x + ',' + y]}`)
+                        let lightData = this._map.getLightData();
+                        // console.log(lightData) //always empty objects, so no light data getting set
+                        let lightColor = lightData[currentDepth][x + ',' + y];
+                        // console.log(`lightData at ${x},${y}:` + lightColor) //undefined, bc there's no lightdata for this tile presumably?
+                        // console.log(`here's the lightColor for this tile: ${lightColor}`)
+                        foreground = ROT.Color.toHex(ROT.Color.multiply(baseColor, lightColor)); //getting error "a[e] is undefined" somewhere in rot.min.js
+                        // foreground = baseColor;
                         background = glyph.getBackground();
                     } else {
                         // Since the tile was previously explored but is not 
                         // visible, we want to change the foreground color to
                         // dark gray.
-                        foreground = 'darkslategrey';
+                        foreground = 'rgb(10,10,10';
                     }
                     if (this.highlightedTile.x === x && this.highlightedTile.y === y) {
                         //console.log(`rendering selected tile at ${glyph.x},${glyph.y}`)
