@@ -195,7 +195,7 @@ class ItemListScreen {
         // console.log('here are the selected indices:')
         // console.log(this.selectedIndices)
         var selectedItems = [];
-        this.selectedIndices.forEach(entry => selectedItems.push(this.items[entry]));
+        this.selectedIndices.forEach(entry => selectedItems.push(this.items[entry])); //why do i do this instead of just. using selected indices?
         // console.log('Here are the selected items:')
         // console.log(selectedItems) // always the top item in the inventory screen, regardless of the input, despite the previous console log giving the correct index. why is it the top one, rather than all of them or something?
         // //return to playscreen
@@ -252,6 +252,17 @@ class ItemListScreen {
                     }
                 }
             }
+        }
+        //highlight list item on mousemove
+        if (inputType === 'mousemove') {
+            let dummyData = {
+                clientX: inputData.x, //only actually need these apparently! also wait i adjusted these forever and set them back to default. what.
+                clientY: inputData.y
+            }
+            //set these values to be easier to access
+            var mouseCoords = Game._display.eventToPosition(dummyData);
+            var actualX = mouseCoords[0]+this.topLeftX;
+            var actualY = mouseCoords[1]+this.topLeftY;
         }
     }
 
@@ -371,6 +382,18 @@ Game.Screen.playScreen = {
             newEnemy.setZ(enemy.z);
             //add enemy to map
             this._map.addEntity(newEnemy);
+        })
+        //add items from dungeon items
+        dungeon._items.forEach(item => {
+            //create new item of appropriate type
+            var newItem = new Item(items[item.type]);
+            //set item position
+            newItem.setX(item.x);
+            newItem.setY(item.y);
+            newItem.setZ(item.z);
+            //add item to map
+            console.log(`adding a(n) ${newItem.name} to the map at ${newItem.getX()},${newItem.getY()} on dungeon floor ${(newItem.getZ())+1}`)
+            this._map.addItem(newItem._x, newItem._y, newItem._z, newItem);
         })
         // //this is the old map builder that used dynamic level generation
         // var tiles = new Builder(width, height, depth).getTiles();

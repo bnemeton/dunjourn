@@ -6,6 +6,7 @@ var buildRow = function (row) {
     let rowEnemies = [];
     let rowTiles = [];
     let rowSigns = [];
+    let rowItems = [];
     for (var x = 0; x < row.length; x++) {
         // console.log(row[x]) //duh whoops
         let glyph = row[x];
@@ -38,12 +39,30 @@ var buildRow = function (row) {
                 if (thisEnemy.char == glyph) {
                     // console.log(`found an ${enemy.name}`); //never firing....
                     //create enemy and set position
-                    let newEnemy = new Enemy(thisEnemy);
+                    // let newEnemy = new Enemy(thisEnemy); //needlessly generating an enemy object we will regenerate later
                     // push floortile and add enemy to enemy array
                     rowTiles.push(new FloorTile());
                     rowEnemies.push(
                         {
-                        type: `${newEnemy.name}`,
+                        type: `${enemy}`,
+                        x: x
+                        }
+                    );
+                    // console.log(`added ${newEnemy.name} to enemy array with position `); 
+                }
+            }
+            //check items for a match
+            for (var item in items) {
+                let thisItem = items[item];
+                if (thisItem.char == glyph) {
+                    // console.log(`found an ${enemy.name}`); //never firing....
+                    //create enemy and set position
+                    // let newItem = new Item(thisItem);
+                    // push floortile and add enemy to enemy array
+                    rowTiles.push(new FloorTile());
+                    rowItems.push(
+                        {
+                        type: `${item}`,
                         x: x
                         }
                     );
@@ -57,6 +76,7 @@ var buildRow = function (row) {
     results.push(rowTiles);
     results.push(rowEnemies);
     results.push(rowSigns);
+    results.push(rowItems);
     return results;
 }
 
@@ -67,21 +87,28 @@ var buildFloor = function (tiles, depth) {
     var floorTiles = [];
     var floorEnemies = [];
     var floorSignText = levelSigns[depth];
+    var floorItems = [];
     var signIndex = 0;
     for (var y = 0; y < tiles.length; y++) {
         let builtRow = buildRow(tiles[y]);
         let rowTiles = builtRow[0];
         let rowEnemies = builtRow[1];
-        let rowSigns = builtRow[2];
+        let rowItems = builtRow[3];
+        // let rowSigns = builtRow[2];
         // add sign text to each sign
         for (var i = 0; i < rowTiles.length; i++) {
             if (rowTiles[i] instanceof SignTile) {
             rowTiles[i].setText(floorSignText[signIndex]); 
-            console.log(`sign at ${i},${y}: ${floorSignText[signIndex]}`); //this is outputting the correct text, but the signs wind up "blank".
+            console.log(`sign at ${i},${y}: ${floorSignText[signIndex]}`); //this works now
             signIndex++;
             }
         }
         floorTiles.push(rowTiles);
+        //add y position to each item in the returned array
+        for (var i = 0; i < rowItems.length; i++) {
+            rowItems[i].y = y;
+            floorItems.push(rowItems[i]);
+        }
         // add y position to each enemy in the returned array
         for (var i = 0; i < rowEnemies.length; i++) {
             rowEnemies[i].y = y;
@@ -92,6 +119,7 @@ var buildFloor = function (tiles, depth) {
 
     results.push(floorTiles);
     results.push(floorEnemies);
+    results.push(floorItems);
 
     return results;
 
@@ -119,6 +147,11 @@ class Builder {
             for (var i = 0; i < floor[1].length; i++) {
                 floor[1][i].z = z;
                 this._enemies.push(floor[1][i]);
+            }
+            //set items z position to this floor
+            for (var i = 0; i < floor[2].length; i++) {
+                floor[2][i].z = z;
+                this._items.push(floor[2][i]);
             }
         }
         // console.log(this._tiles); //why is this undefined?
