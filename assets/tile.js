@@ -81,9 +81,8 @@ class SignTile extends Tile {
         this.text = this.text+this.signText;
     }
     setText(string) {
-
         this.signText = string;
-        this.text = "There is a sign here. "+this.signText;
+        this.text = `There is a sign here. It reads:"${this.signText}"`;
     }
 }
 

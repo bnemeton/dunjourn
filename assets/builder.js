@@ -5,6 +5,7 @@ var buildRow = function (row) {
     let results = [];
     let rowEnemies = [];
     let rowTiles = [];
+    let rowSigns = [];
     for (var x = 0; x < row.length; x++) {
         // console.log(row[x]) //duh whoops
         let glyph = row[x];
@@ -24,11 +25,12 @@ var buildRow = function (row) {
                 break;
             case "Ħ":
                 let newSign = new SignTile({});
-                newSign.setText("It reads: 'Hello, world!'");
                 rowTiles.push(newSign);
+                rowSigns.push(newSign);
+                break;
         }
         //if none of the standard tiles, check enemies for a match
-        if (glyph != "." && glyph != "#" && glyph != ">" && glyph != "<") {
+        if (glyph != "." && glyph != "#" && glyph != ">" && glyph != "<" && glyph != "Ħ") {
             // console.log(glyph+` found in map.`) // works fine
             for (var enemy in enemies) {
                 // console.log(enemies[enemy]) //ah for in iterates over the keys, not the values, whoops
@@ -54,28 +56,43 @@ var buildRow = function (row) {
     // console.log(rowTiles); //all empty now.... so something is afoot in buildRow
     results.push(rowTiles);
     results.push(rowEnemies);
+    results.push(rowSigns);
     return results;
 }
 
 
-var buildFloor = function (tiles) {
+var buildFloor = function (tiles, depth) {
     // console.log(tiles); // seems correct, which i would expect
     let results = [];
     var floorTiles = [];
     var floorEnemies = [];
+    var floorSignText = levelSigns[depth];
+    var signIndex = 0;
     for (var y = 0; y < tiles.length; y++) {
         let builtRow = buildRow(tiles[y]);
         let rowTiles = builtRow[0];
         let rowEnemies = builtRow[1];
+        let rowSigns = builtRow[2];
+        // add sign text to each sign
+        for (var i = 0; i < rowTiles.length; i++) {
+            if (rowTiles[i] instanceof SignTile) {
+            rowTiles[i].setText(floorSignText[signIndex]); 
+            console.log(`sign at ${i},${y}: ${floorSignText[signIndex]}`); //this is outputting the correct text, but the signs wind up "blank".
+            signIndex++;
+            }
+        }
         floorTiles.push(rowTiles);
         // add y position to each enemy in the returned array
         for (var i = 0; i < rowEnemies.length; i++) {
             rowEnemies[i].y = y;
             floorEnemies.push(rowEnemies[i]);
         }
+
     }
+
     results.push(floorTiles);
     results.push(floorEnemies);
+
     return results;
 
 }
@@ -94,7 +111,7 @@ class Builder {
         // build dungeon
         for (var z = 0; z < this._depth; z++) {
             // build each floor of the dungeon
-            let floor = buildFloor(tilemap[z]);
+            let floor = buildFloor(tilemap[z], z);
             // console.log(`floor tiles: ${floor[0]}`); //fixed
             // console.log(`floor enemies: ${floor[1]}`); //fixed
             this._tiles.push(floor[0]);
