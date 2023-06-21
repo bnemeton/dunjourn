@@ -13,14 +13,12 @@ class Map {
         this.setupExploredArray();
         //array of arrays of lights
         this._lights = [
-        //center light for testing purposes
-            [
                 {
                 x: 32,
                 y: 32,
+                z: 0,
                 color: [255, 255, 255]
                 }
-            ]
         ];
         //lightData
         this._lightData = [];
@@ -41,6 +39,10 @@ class Map {
         this._engine = new ROT.Engine(this._scheduler);
         //add the player
         this.addEntityAtRandomPosition(player, 0);
+        //set player light location & add player light to map
+        player.light.setPosition(player.getX(), player.getY(), player.getZ());
+        this._lights.push(player.light);
+        console.log(`added player light at ${player.light.getX()}, ${player.light.getY()}`)
         
     }
     getLights() {
@@ -51,6 +53,28 @@ class Map {
     }
     setLightData(lightData) {
         this._lightData = lightData;
+    }
+    updateLightData(z) {
+        var map = this;
+        function reflectivityCallback(x, y) {
+            let tile = map.getTile(x, y, z);
+            switch (tile.char) {
+                case ".": return 0.3;
+                case "#": return 0;
+            }
+     }
+        var lighting = new ROT.Lighting(reflectivityCallback, {range: 20, passes: 3});
+             lighting.setFOV(this._fov[z]);
+             function lightingCallback(x, y, color) {
+                 var key = `${x},${y}`;
+                 map._lightData[z][key] = color;
+                //  console.log("lighting callback called")
+                 
+             }
+             for (let i = 0; i < this._lights.length; i++) {
+                 lighting.setLight(this._lights[i].x, this._lights[i].y, this._lights[i].color);
+             }
+             lighting.compute(lightingCallback);
     }
 
     getItemsAt(x, y, z) {
@@ -99,7 +123,8 @@ class Map {
                     new ROT.FOV.PreciseShadowcasting(function(x, y) {
                         // console.log(`tile ${x}, ${y} on floor ${depth} type: ${map.getTile(x, y, z).constructor.name}`) //always returns NullTile for some reason? but the actual shadowcasting works
                         return !map.getTile(x, y, depth).isOpaque;
-                    }
+                    },
+                    {topology: 8}
                 ))
                 }
             whatever();
@@ -107,12 +132,20 @@ class Map {
             for (var y = 0; y < this._height; y++) {
                 for (var x = 0; x < this._width; x++) {
                     var key = `${x},${y}`;
-                    map._lightData[z][key] = [10, 10, 10];
+                    map._lightData[z][key] = [0, 0, 0];
                 }
             }
 
              // lightData setup
-             var lighting = new ROT.Lighting();
+             function reflectivityCallback(x, y) {
+                    let tile = map.getTile(x, y, z);
+                    switch (tile.char) {
+                        case ".": return 0.3;
+                        case "#": return 0;
+                    }
+             }
+             var lighting = new ROT.Lighting(reflectivityCallback, {range: 20, passes: 3});
+            // var lighting = new ROT.Lighting();
              lighting.setFOV(this._fov[z]);
              function lightingCallback(x, y, color) {
                  var key = `${x},${y}`;
@@ -128,12 +161,8 @@ class Map {
         // console.log(map._fov)
     };
     addLight(x, y, z, color) {
-        let light = new Light({x: x, y: y, color: color});
-        if (this._lights[z]) {
-            this._lights[z].push(light);
-        } else {
-            this._lights[z] = [light];
-        }
+        let light = new Light({x: x, y: y, z: z, color: color});
+        this._lights.push(light);
 
     }
     setupExploredArray() {

@@ -429,7 +429,15 @@ Game.Screen.playScreen = {
                
             });
         this.visibleCells = visibleCells;
+        this._map.updateLightData(currentDepth);
         var lightData = this._map.getLightData();
+        //check each visible cell for light
+        for (var cell in visibleCells) {
+            //if cell is dark, remove from visibleCells
+            if (lightData[currentDepth][cell][0]+lightData[currentDepth][cell][1]+lightData[currentDepth][cell][2] < 60) {
+                delete visibleCells[cell];
+            }
+        }
         var lighting = new ROT.Lighting()
         lighting.setFOV(this._map.getFOV(currentDepth));
         var lights = this._map.getLights()[currentDepth];
@@ -504,9 +512,12 @@ Game.Screen.playScreen = {
                             // console.log(`lightData at ${x},${y}:` + lightColor) //undefined, bc there's no lightdata for this tile presumably?
                         // console.log(`here's the lightColor for this tile: ${lightColor}`)
                         let litColor = ROT.Color.multiply(baseColor, lightColor);
-                        if (litColor[0]+litColor[1]+litColor[2] < 60) {
-                            litColor = [20, 20, 20]
+                        if (lightColor[0]+lightColor[1]+lightColor[2] < 60) {
+                            litColor = [30, 30, 30]
                         }
+                        // if (litColor[0]+litColor[1]+litColor[2] < 60) {
+                        //     litColor = [20, 20, 20]
+                        // }
                         foreground = ROT.Color.toHex(litColor); //getting error "a[e] is undefined" somewhere in rot.min.js
                         
                         // foreground = baseColor;
@@ -669,7 +680,8 @@ Game.Screen.playScreen = {
                             text += ` There are also some items here.`
                         }
                     }
-
+                    let lightLevel = this._map._lightData[currentDepth][`${actualX},${actualY}`];
+                    text += ` It is ${lightLevel} bright here.`
                 }
 
                 let toolTipText = text

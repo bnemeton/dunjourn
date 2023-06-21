@@ -16,8 +16,14 @@ class Player extends Entity {
         this.damage = 1;
         this.armor = 0;
         this.luck = 1.0;
-        this.sight = 999;
+        this.sight = 100;
         this.alive = true;
+        this.light = new Light({
+            color: [100, 100, 100],
+            x: this.x,
+            y: this.y,
+            z: this.z
+        });
     }
     getHp() {
         return this.hp
@@ -54,6 +60,8 @@ class Player extends Entity {
         }
     }
     tryMove(x, y, z, map) {
+        console.log (this._x, this._y, this._z)
+        console.log(this._map._lights)
         var map = this.getMap();
         // console.log(this.getZ());
 
@@ -67,6 +75,7 @@ class Player extends Entity {
                 Game.message("You can't go up here.")
             } else {
                 this.setPosition(x, y, z);
+                this.light.setPosition(x, y, z);
                 Game.message("You walk up the stairs.")
             }
         }
@@ -75,6 +84,7 @@ class Player extends Entity {
                 Game.message("You can't go down here.")
             } else {
                 this.setPosition(x, y, z);
+                this.light.setPosition(x, y, z);
                 Game.message("You walk down the stairs.")
             }
         }
@@ -97,6 +107,7 @@ class Player extends Entity {
         if (tile.isWalkable) {
             // Update the entity's position
             this.setPosition(x, y, z);
+            this.light.setPosition(x, y, z);
             // console.log('updated player-stored position!')
             var items = this.getMap().getItemsAt(x, y, z);
             if (items.length > 0) {

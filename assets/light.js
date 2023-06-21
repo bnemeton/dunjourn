@@ -4,6 +4,7 @@ class Light {
         this.color = properties['color'] || [255, 255, 255];
         this.x = properties['x'] || 0;
         this.y = properties['y'] || 0;
+        this.z = properties['z'] || 0;
     }
 
     getColor() {
@@ -23,6 +24,18 @@ class Light {
     }
     setY(y) {
         this.y = y;
+    }
+    getZ() {
+        return this.z;
+    }
+    setZ(z) {
+        this.z = z;
+    }
+
+    setPosition(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
 }
