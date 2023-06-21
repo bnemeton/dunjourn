@@ -19,10 +19,16 @@ class Player extends Entity {
         this.sight = 100;
         this.alive = true;
         this.light = new Light({
-            color: [100, 100, 100],
+            color: [150, 100, 75],
             x: this.x,
             y: this.y,
-            z: this.z
+            z: this.z,
+            states: [
+                [150, 100, 75],
+                [150, 125, 75],
+                [150, 150, 75],
+                [125, 125, 75]
+            ]
         });
     }
     getHp() {
@@ -60,8 +66,8 @@ class Player extends Entity {
         }
     }
     tryMove(x, y, z, map) {
-        console.log (this._x, this._y, this._z)
-        console.log(this._map._lights)
+        // console.log (this._x, this._y, this._z)
+        // console.log(this._map._lights)
         var map = this.getMap();
         // console.log(this.getZ());
 

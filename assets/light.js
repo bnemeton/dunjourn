@@ -5,8 +5,11 @@ class Light {
         this.x = properties['x'] || 0;
         this.y = properties['y'] || 0;
         this.z = properties['z'] || 0;
+        this.states = properties['states'] || [properties['color']];
     }
-
+    flicker() {
+        this.color = this.states[Math.floor(Math.random() * this.states.length)];
+    }
     getColor() {
         return this.color;
     }

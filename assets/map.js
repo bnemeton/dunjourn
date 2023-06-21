@@ -12,13 +12,19 @@ class Map {
         this._explored = new Array(this._depth);
         this.setupExploredArray();
         //array of arrays of lights
+        let testLight = new Light({
+            color: [150, 100, 75],
+            x: 32,
+            y: 32,
+            z: 0,
+            states: [
+                [150, 100, 75],
+                [150, 125, 75],
+                [150, 150, 75],
+                [125, 125, 75]
+            ]
+        });
         this._lights = [
-                {
-                x: 32,
-                y: 32,
-                z: 0,
-                color: [255, 255, 255]
-                }
         ];
         //lightData
         this._lightData = [];
@@ -56,14 +62,20 @@ class Map {
     }
     updateLightData(z) {
         var map = this;
+        //iterate over lights and flicker them
+        for (let i = 0; i < this._lights.length; i++) {
+            this._lights[i].flicker();
+        }
         function reflectivityCallback(x, y) {
             let tile = map.getTile(x, y, z);
             switch (tile.char) {
                 case ".": return 0.3;
                 case "#": return 0;
+                case ">": return 0.5;
+                case "<": return 0.5;
             }
-     }
-        var lighting = new ROT.Lighting(reflectivityCallback, {range: 20, passes: 3});
+        }
+        var lighting = new ROT.Lighting(reflectivityCallback, {range: 10, passes: 3});
              lighting.setFOV(this._fov[z]);
              function lightingCallback(x, y, color) {
                  var key = `${x},${y}`;
@@ -142,9 +154,11 @@ class Map {
                     switch (tile.char) {
                         case ".": return 0.3;
                         case "#": return 0;
+                        case ">": return 0.5;
+                        case "<": return 0.5;
                     }
              }
-             var lighting = new ROT.Lighting(reflectivityCallback, {range: 20, passes: 3});
+             var lighting = new ROT.Lighting(reflectivityCallback, {range: 10, passes: 3});
             // var lighting = new ROT.Lighting();
              lighting.setFOV(this._fov[z]);
              function lightingCallback(x, y, color) {

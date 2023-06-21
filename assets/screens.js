@@ -434,7 +434,7 @@ Game.Screen.playScreen = {
         //check each visible cell for light
         for (var cell in visibleCells) {
             //if cell is dark, remove from visibleCells
-            if (lightData[currentDepth][cell][0]+lightData[currentDepth][cell][1]+lightData[currentDepth][cell][2] < 60) {
+            if (lightData[currentDepth][cell][0]+lightData[currentDepth][cell][1]+lightData[currentDepth][cell][2] < 64) {
                 delete visibleCells[cell];
             }
         }
@@ -512,9 +512,9 @@ Game.Screen.playScreen = {
                             // console.log(`lightData at ${x},${y}:` + lightColor) //undefined, bc there's no lightdata for this tile presumably?
                         // console.log(`here's the lightColor for this tile: ${lightColor}`)
                         let litColor = ROT.Color.multiply(baseColor, lightColor);
-                        if (lightColor[0]+lightColor[1]+lightColor[2] < 60) {
-                            litColor = [30, 30, 30]
-                        }
+                        // if (lightColor[0]+lightColor[1]+lightColor[2] < 60) {
+                        //     litColor = [30, 30, 30]
+                        // }
                         // if (litColor[0]+litColor[1]+litColor[2] < 60) {
                         //     litColor = [20, 20, 20]
                         // }
