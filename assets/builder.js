@@ -22,6 +22,10 @@ var buildRow = function (row) {
             case "<":
                 rowTiles.push(new StairUp());
                 break;
+            case "Ħ":
+                let newSign = new SignTile({});
+                newSign.setText("It reads: 'Hello, world!'");
+                rowTiles.push(newSign);
         }
         //if none of the standard tiles, check enemies for a match
         if (glyph != "." && glyph != "#" && glyph != ">" && glyph != "<") {

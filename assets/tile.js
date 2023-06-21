@@ -69,6 +69,24 @@ class StairUp extends Tile {
     }
 }
 
+class SignTile extends Tile {
+    constructor(properties) {
+        super({
+            char: 'Ħ',
+            fg: 'tan',
+            isWalkable: false,
+            text: "There is a sign here. "
+        })
+        this.signText = properties['signText'] || "This sign is blank."
+        this.text = this.text+this.signText;
+    }
+    setText(string) {
+
+        this.signText = string;
+        this.text = "There is a sign here. "+this.signText;
+    }
+}
+
 // //getters
 
 // Game.Tile.prototype.isWalkable = function() {

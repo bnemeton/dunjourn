@@ -650,7 +650,7 @@ Game.Screen.playScreen = {
                         //console.log(entity.name)
                         text = `There is a ${entity.name} here. ${entity.text}`
 
-                        if (this._map.getEntityAt(actualX,actualY, currentDepth).name === 'branded') {
+                        if (this._map.getEntityAt(actualX,actualY, currentDepth).name === 'player') {
                             text += ` It's you.`
                         }
                         let inventory = ``;
