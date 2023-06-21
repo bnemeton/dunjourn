@@ -179,12 +179,22 @@ class ItemListScreen {
     }
 
     setup(player, items) {
+        // console.log(items); //let's see what this looks like. looks fine!
         if (items.length === 0) {
             Game.setSubScreen(null);
         }
         this.player = player;
         this.items = items;
+        // console.log(this.items) // should just be bag contents. and is!
         this.selectedIndices = [];
+        //make a list item object for each item
+        this.listItems = [];
+        for (var i = 0; i < this.items.length; i++) {
+            //make sure the slot *has* an item
+            if (this.items[i]) {
+                this.listItems.push(new ItemListItem(this.items[i]));
+            }
+        }
         // console.log(`here are the selected indices (should be none):`)
         // console.log(this.selectedIndices)
         // console.log(`window should be labeled ${this.label}`)
@@ -255,14 +265,7 @@ class ItemListScreen {
         }
         //highlight list item on mousemove
         if (inputType === 'mousemove') {
-            let dummyData = {
-                clientX: inputData.x, //only actually need these apparently! also wait i adjusted these forever and set them back to default. what.
-                clientY: inputData.y
-            }
-            //set these values to be easier to access
-            var mouseCoords = Game._display.eventToPosition(dummyData);
-            var actualX = mouseCoords[0]+this.topLeftX;
-            var actualY = mouseCoords[1]+this.topLeftY;
+            
         }
     }
 
@@ -270,22 +273,35 @@ class ItemListScreen {
         var letters = 'abcdefghijklmnopqrstuvwxyz';
         display.drawText(this.indent, this.top, this.label);
         var row = 0;
-        for (var i = 0; i < this.items.length; i++) {
-            // If we have an item, we want to render it.
-            if (this.items[i]) {
-                // Get the letter matching the item's index
-                var letter = letters.substring(i, i + 1);
-                // If we have selected an item, show a +, else show a dash between
-                // the letter and the item's name.
-                var selectionState = (this.selectable && this.multiselect &&
-                    this.selectedIndices.includes(i)) ? '+' : '-';
-                // Render at the correct row and add 2.
-                display.drawText(this.indent, this.top + 2 + row, letter + ' ' + selectionState + ' ' + this.items[i].quantity + ' ' + this.items[i].name);
-                row++;
+        //for each itemlistitem, render it
+        for (let i=0; i < this.listItems.length; i++) {
+            //get the letter matching the item's index
+            var letter = letters.substring(i, i + 1);
+            let text = "";
+            text += letter + " " + this.listItems[i].label + " - " + this.listItems[i].quantity;
+            if (this.listItems[i].selected) {
+                text += " +";
             }
+            display.drawText(this.indent, this.top + 2 + row, letter + ' ' + text);
+            row++;
         }
+        // for (var i = 0; i < this.items.length; i++) {
+        //     // If we have an item, we want to render it.
+        //     if (this.items[i]) {
+        //         // Get the letter matching the item's index
+        //         var letter = letters.substring(i, i + 1);
+        //         // If we have selected an item, show a +, else show a dash between
+        //         // the letter and the item's name.
+        //         var selectionState = (this.selectable && this.multiselect &&
+        //             this.selectedIndices.includes(i)) ? '+' : '-';
+        //         // Render at the correct row and add 2.
+        //         display.drawText(this.indent, this.top + 2 + row, letter + ' ' + selectionState + ' ' + this.items[i].quantity + ' ' + this.items[i].name);
+        //         row++;
+        //     }
+        // }
     }
 }
+
 
 //inventory screen
 Game.Screen.inventoryScreen = new ItemListScreen({
@@ -301,7 +317,7 @@ Game.Screen.inventoryScreen = new ItemListScreen({
             options: item.options,
             label: `What do you want to do with this ${item.name}?`
         })
-        window.setup(this.player)
+        window.setup(this.player, this.player.getBag())
         Game.Screen.playScreen.setSubScreen(window);
         Game.refresh();
     }
