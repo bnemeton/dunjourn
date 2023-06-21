@@ -434,7 +434,7 @@ Game.Screen.playScreen = {
         //check each visible cell for light
         for (var cell in visibleCells) {
             //if cell is dark, remove from visibleCells
-            if (lightData[currentDepth][cell][0]+lightData[currentDepth][cell][1]+lightData[currentDepth][cell][2] < 64) {
+            if (lightData[currentDepth][cell][0]+lightData[currentDepth][cell][1]+lightData[currentDepth][cell][2] < 128) {
                 delete visibleCells[cell];
             }
         }
@@ -533,6 +533,10 @@ Game.Screen.playScreen = {
                     if (this.highlightedTile.x === x && this.highlightedTile.y === y) {
                         //console.log(`rendering selected tile at ${glyph.x},${glyph.y}`)
                         background = 'darkslategrey'
+                    }
+                    // if glyph is the player, replace foreground with white
+                    if (glyph.name === 'player') {
+                        foreground = 'white'
                     }
                     // console.log(`highlighted tile SHOULD be ${this.highlightedTile.x}, ${this.highlightedTile.y}`)
                     displays.main.draw(
