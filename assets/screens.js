@@ -282,7 +282,7 @@ class ItemListScreen {
                     // console.log(itemY)
                     if (mouseY === itemY) {
                         this.listItems[i].hovered = true;
-                        console.log(this.listItems[i].label + " is hovered")
+                        // console.log(this.listItems[i].label + " is hovered")
                         // console.log(`hovered`) //this triggers now but doesn't actually change the bg color
                         Game.refresh(); //why is it not highlighting the row?
                         // this.render(Game._display); //this doesn't work either. also, game.refresh works elsewhere...
@@ -294,6 +294,25 @@ class ItemListScreen {
                 }
 
                 
+        }
+
+        //select list item on mouseclick
+        if (inputType === 'mousedown') {
+            // console.log('mousedown') //never triggers..
+            for (let i=0; i < this.listItems.length; i++) {
+                if (this.listItems[i].hovered) {
+                    // console.log(`clicked on ${this.listItems[i].label}`)
+                    
+                    if (this.multiselect) {
+                        this.listItems[i].selected = true;
+                        Game.refresh();
+                    } else {
+                        this.selectedIndices.push(i);
+                        this.executeOkFunction();
+                    }
+                        
+                }
+            }
         }
     }
 
@@ -307,7 +326,7 @@ class ItemListScreen {
             var letter = letters.substring(i, i + 1);
             let text = "";
             let bg = "black";
-            text = letter + " " + this.listItems[i].label + " - " + this.listItems[i].quantity;
+            text = letter + " - " + this.listItems[i].label + " - " + this.listItems[i].quantity;
             if (this.listItems[i].selected) {
                 text += " +";
             }
@@ -315,6 +334,7 @@ class ItemListScreen {
                 bg = "darkslategray";
             }
             this.listItems[i].position = [this.indent, this.top + 2 + row];
+            this.listItems[i].index = letter;
             // console.log(this.listItems[i].position)
             display.drawText(this.indent, this.top + 2 + row, `%c{white}%b{${bg}}`+text,);
             row++;
@@ -921,7 +941,10 @@ Game.Screen.playScreen = {
                     break;
                     
             }
-        }    
+            }
+            // if (inputType === 'mousedown')  { // never detected
+            //     console.log('mouse click registered');
+            // }   
     }}
 }
 

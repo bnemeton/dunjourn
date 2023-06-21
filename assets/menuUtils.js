@@ -26,5 +26,6 @@ class ItemListItem extends ListItem {
         this.quantity = item.quantity;
         this.selected = false;
         this.hovered = false;
+        this.index = "";
     }
 }

@@ -53,6 +53,7 @@ var Game =  {
         // bindEventToScreen('keyup');
         bindEventToScreen('keypress');
         bindEventToScreen('mousemove');
+        bindEventToScreen('mousedown');
     },
     refresh: function() {
         //clear the screen
