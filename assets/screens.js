@@ -265,7 +265,35 @@ class ItemListScreen {
         }
         //highlight list item on mousemove
         if (inputType === 'mousemove') {
-            
+            // console.log(inputData.y)
+            //detect if mouse is over a list item
+            let eventData = {
+                clientX: inputData.x, //only actually need these apparently! also wait i adjusted these forever and set them back to default. what.
+                clientY: inputData.y
+            }
+                //set these values to be easier to access
+                var mouseCoords = Game._display.eventToPosition(eventData);
+                var mouseX = mouseCoords[0]+this.indent;
+                var mouseY = mouseCoords[1];
+                // console.log(mouseY)
+                //if mouse position matches a row, highlight that row
+                for (let i=0; i < this.listItems.length; i++) { //never true, so i'm missing something about formatting
+                    let itemY = this.listItems[i].position[1];
+                    // console.log(itemY)
+                    if (mouseY === itemY) {
+                        this.listItems[i].hovered = true;
+                        console.log(this.listItems[i].label + " is hovered")
+                        // console.log(`hovered`) //this triggers now but doesn't actually change the bg color
+                        Game.refresh(); //why is it not highlighting the row?
+                        // this.render(Game._display); //this doesn't work either. also, game.refresh works elsewhere...
+                    } else {
+                        this.listItems[i].hovered = false;
+                        // console.log(`not hovered`)
+                        Game.refresh();
+                    }
+                }
+
+                
         }
     }
 
@@ -278,11 +306,17 @@ class ItemListScreen {
             //get the letter matching the item's index
             var letter = letters.substring(i, i + 1);
             let text = "";
-            text += letter + " " + this.listItems[i].label + " - " + this.listItems[i].quantity;
+            let bg = "black";
+            text = letter + " " + this.listItems[i].label + " - " + this.listItems[i].quantity;
             if (this.listItems[i].selected) {
                 text += " +";
             }
-            display.drawText(this.indent, this.top + 2 + row, letter + ' ' + text);
+            if (this.listItems[i].hovered) {
+                bg = "darkslategray";
+            }
+            this.listItems[i].position = [this.indent, this.top + 2 + row];
+            // console.log(this.listItems[i].position)
+            display.drawText(this.indent, this.top + 2 + row, `%c{white}%b{${bg}}`+text,);
             row++;
         }
         // for (var i = 0; i < this.items.length; i++) {
