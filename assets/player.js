@@ -24,12 +24,7 @@ class Player extends Entity {
             y: this.y,
             z: this.z,
             states: [
-                [150, 100, 50],
-                [150, 125, 50],
-                [150, 150, 50],
-                [125, 125, 50],
-                [175, 150, 50],
-                [200, 175, 50]
+                [100, 100, 100]
             ]
         });
     }
@@ -149,5 +144,15 @@ class Player extends Entity {
         // for the player to press a key.
         this.getMap().getEngine().lock();
         console.log('awaiting player input...')
+    }
+    openContainer(container) {
+        container.refresh();
+        console.log(`player opening a ${container.name} which contains:`)
+        console.log(container.contents) //empty, bag not initialized properly
+        Game.message(`You open the ${container.name}.`)
+        Game.Screen.containerScreen.setup(this, container.contents, container);
+        Game.Screen.playScreen.setSubScreen(Game.Screen.containerScreen);
+        // console.log(`set subscreen to containerScreen`) //fires but is Lying To Me
+        Game.refresh();
     }
 }

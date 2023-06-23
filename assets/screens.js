@@ -71,11 +71,12 @@ class OptionWindow {
                     hovered: false
                 }
             })
+        this.container = props.container
     }
 
     setup(player) {
         this.player = player;
-        console.log(`window should be labeled ${this.label}`)
+        // console.log(`window should be labeled ${this.label}`)
     }
 
     okFunction(option) {
@@ -96,7 +97,22 @@ class OptionWindow {
             case 'study':
                 this.item.study(this.index);
                 break;
+            case 'take':
+                let newItem = new Item({...this.item});
+                this.item.quantity -= 1;
+                this.player.giveItem(newItem);
+                break;
+            case "take all":
+                let newItems = new Item({...this.item});
+                this.item.quantity = 0;
+                this.player.giveItem(newItems);
+                break;
+            case 'open':
+                this.item.open();
+                return true;
+                break;
         }
+        console.log(`optionScreen okFunction called`)
         Game.Screen.playScreen.setSubScreen(null);
         return true;
     }
@@ -236,14 +252,20 @@ class ItemListScreen {
         this.top = (Game._screenHeight/2) - 9;
     }
 
-    setup(player, items) {
+    setup(player, items, container = null) {
+        if (container) {
+            console.log(`setting up a container screen for ${container.name}`) //this fires
+            this.container = container;
+            this.label += ` of ${container.name}`
+        }
         // console.log(items); //let's see what this looks like. looks fine!
         if (items.length === 0) {
-            Game.setSubScreen(null);
+            console.log(`no items, closing itemlist`) //this no longer fires, but the window still doesn't appear
+            Game.Screen.playScreen.setSubScreen(null);
         }
         this.player = player;
         this.items = items;
-        // console.log(this.items) // should just be bag contents. and is!
+        // console.log(this.items) // should just be bag contents. and is! //still fine for containers
         this.selectedIndices = [];
         //make a list item object for each item
         this.listItems = [];
@@ -255,7 +277,7 @@ class ItemListScreen {
         }
         // console.log(`here are the selected indices (should be none):`)
         // console.log(this.selectedIndices)
-        // console.log(`window should be labeled ${this.label}`)
+        console.log(`window should be labeled ${this.label}`) //this works fine, suggesting window closes *after* setup is done.
     }
 
     executeOkFunction(item, index) { //leaving these here in case i want them later
@@ -271,6 +293,7 @@ class ItemListScreen {
         // Call the OK function and end the player's turn if it return true.
         if (this.okFunction(selectedItems, this.selectedIndices)) {
             this.player.getMap().getEngine().unlock();
+            // console.log(`okFunction triggered, returning to playscreen`) //not the culprit of the Container Clearing Bug
             Game.Screen.playScreen.setSubScreen(null);
         }
     }
@@ -375,6 +398,8 @@ class ItemListScreen {
     }
 
     render(display) {
+        // console.log(`rendering an itemList screen`) //fires fine for containers. why does the inventory render fine but not containerscreen?
+        // console.log(this.label)
         var letters = 'abcdefghijklmnopqrstuvwxyz';
         display.drawText(this.indent, this.top, this.label);
         var row = 0;
@@ -414,6 +439,31 @@ class ItemListScreen {
     }
 }
 
+//container screen
+Game.Screen.containerScreen = new ItemListScreen({
+    label: "contents",
+    multiselect: false,
+    selectable: true,
+    container: null,
+    okFunction: function(selectedItems, selectedIndices) {
+        var item = selectedItems[0];
+        //console.log(`attempting to use a(n) ${item.name}`)
+        let options = item.options;
+        options.push("take");
+        var window = new OptionWindow({
+            index: selectedIndices[0],
+            item: item,
+            options: options,
+            label: `What do you want to do with this ${item.name}?`,
+            container: this.container
+        })
+        window.setup(this.player)
+        Game.Screen.playScreen.setSubScreen(window);
+        Game.refresh();
+    }
+
+})
+
 
 //inventory screen
 Game.Screen.inventoryScreen = new ItemListScreen({
@@ -429,7 +479,7 @@ Game.Screen.inventoryScreen = new ItemListScreen({
             options: item.options,
             label: `What do you want to do with this ${item.name}?`
         })
-        window.setup(this.player, this.player.getBag())
+        window.setup(this.player)
         Game.Screen.playScreen.setSubScreen(window);
         Game.refresh();
     }
@@ -478,6 +528,11 @@ Game.Screen.playScreen = {
     },
     setSubScreen: function(subScreen) {
         this.subScreen = subScreen;
+        if (this.subScreen === null) {
+            console.log(`cleared subscreen`) //container screens immediately clear... why?
+        }
+        // if (this.subScreen === Game.Screen.containerScreen)
+        //     {console.log(`set subscreen to containerscreen`)} //Lying To Me
         Game.refresh()
     },
     enter: function() {
@@ -513,8 +568,27 @@ Game.Screen.playScreen = {
         })
         //add items from dungeon items
         dungeon._items.forEach(item => {
-            //create new item of appropriate type
-            var newItem = new Item(items[item.type]);
+            //if item is a container, create a container, otherwise create a normal item
+            //initiate bagIndex
+            var bagIndex = 0;
+            console.log(`spawning a(n) ${item.type}`)
+            if (items[item.type].container === true) {
+                let contents = [];
+                //iterate over levelContainers[bagIndex], creating a new item for each item in the container
+                levelContainers[bagIndex].forEach(item => {
+                    //create new item of appropriate type
+                    let newSubItem = new Item(items[item]);
+                    //add item to contents
+                    contents.push(newSubItem);
+                    console.log(`Putting a(n) ${newSubItem.name} in a container.`)
+                })
+                //increment bagIndex
+                bagIndex++
+                var newItem = new Container(items[item.type], contents);
+            } else {
+                var newItem = new Item(items[item.type]);
+            }
+        
             //set item position
             newItem.setX(item.x);
             newItem.setY(item.y);
@@ -542,6 +616,9 @@ Game.Screen.playScreen = {
     // exit: function() {console.log("exited play screen."); },
     render: function(displays) {
         if (this.subScreen) {
+            // if (this.subScreen === Game.Screen.containerScreen) {
+            //     console.log(`rendering container screen!`) // LTM!!!
+            // }
             this.subScreen.render(displays.main);
             return;
         }

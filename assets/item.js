@@ -34,7 +34,7 @@ class Item extends Glyph {
     getZ() {
         return this._z;
     }
-    
+
     drop(index) {
         // Game.message(`You drop the ${this.name}.`)
         Game._currentScreen._player.dropItem(index);
@@ -42,6 +42,33 @@ class Item extends Glyph {
     }
 }
 
+class Container extends Item {
+    constructor(props, contents) {
+        super(props);
+        this.contents = contents || [];
+        this.slots = props['slots'] || 3;
+    }
+    addItem(item) {
+        if (this.contents.length < this.slots) {
+            this.contents.push(item);
+            return true;
+        } else {
+            Game.message(`There's no room in this ${this.name}.`)
+            return false;
+        }
+    }
+    removeItem(index) {
+        this.contents.splice(index, 1);
+    }
+    open() {
+        Game._currentScreen._player.openContainer(this);
+    }
+    refresh() {
+        for (let i = 0; i < this.contents.length; i++) {
+            this.contents[i].quantity === 0 ? this.removeItem(i) : false;
+        }
+    }
+}
 
 // class Food extends Item {
 //     constructor() {
