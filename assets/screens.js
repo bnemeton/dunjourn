@@ -119,7 +119,18 @@ class OptionWindow {
 
     render(display) {
         var letters = 'abcdefghijklmnopqrstuvwxyz';
-        display.drawText(this.indent, this.top, this.item.text, 50)
+        let text = this.item.text;
+        if (this.item.contents.length > 0) {
+            text += " It contains: "
+            for (let i = 0; i < this.item.contents.length; i++) {
+                text += `${this.item.contents[i].quantity} ${this.item.contents[i].name}`
+                if (i < this.item.contents.length - 1) {
+                    text += ", "
+                }
+            }
+            text += "."
+        }
+        display.drawText(this.indent, this.top, text, 50)
         var row = 2;
         display.drawText(this.indent, this.top+row+1, this.label);
         row += 2
@@ -736,10 +747,11 @@ Game.Screen.playScreen = {
                         let lightData = this._map.getLightData();
                         // console.log(lightData) //always empty objects, so no light data getting set
                         let lightColor = lightData[currentDepth][x + ',' + y];
-                      
+                        let lighterColor = ROT.Color.add(lightColor, [45, 45, 45]);
+
                             // console.log(`lightData at ${x},${y}:` + lightColor) //undefined, bc there's no lightdata for this tile presumably?
                         // console.log(`here's the lightColor for this tile: ${lightColor}`)
-                        let litColor = ROT.Color.multiply(baseColor, lightColor);
+                        let litColor = ROT.Color.multiply(baseColor, lighterColor);
                         // if (lightColor[0]+lightColor[1]+lightColor[2] < 60) {
                         //     litColor = [30, 30, 30]
                         // }

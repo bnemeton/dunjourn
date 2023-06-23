@@ -19,12 +19,12 @@ class Player extends Entity {
         this.sight = 100;
         this.alive = true;
         this.light = new Light({
-            color: [150, 100, 75],
+            color: [50, 50, 50],
             x: this.x,
             y: this.y,
             z: this.z,
             states: [
-                [100, 100, 100]
+                [60, 60, 60]
             ]
         });
     }
@@ -126,6 +126,9 @@ class Player extends Entity {
         } else if (tile.isDiggable) {
             map.dig(x, y, z);
             //console.log('dug terrrain!')
+            return true;
+        } else if (tile instanceof DoorTile) {
+            tile.toggle();
             return true;
         }
         return false;

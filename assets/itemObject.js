@@ -17,7 +17,8 @@ var items = {
         bg: 'black',
         options: [
             'open',
-            'store',
+            'stow',
+            'retrieve',
             'drop'
         ],
         container: true

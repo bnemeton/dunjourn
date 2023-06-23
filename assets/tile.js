@@ -86,6 +86,34 @@ class SignTile extends Tile {
     }
 }
 
+class DoorTile extends Tile {
+    constructor() {
+        super({
+            char: '+',
+            fg: 'tan',
+            isWalkable: false,
+            isOpaque: true,
+            text: "This is a closed door."
+        })
+        this.closed = true;
+    }
+    toggle() {
+        this.closed = !this.closed;
+        if (this.closed) {
+            this.char = '+';
+            this.text = "This is a closed door."
+            this.isOpaque = true;
+            this.isWalkable = false;
+        } else {
+            this.char = '-'; //every other part of toggling works, why not this?
+            // console.log(this.char); //yeah this is fine... so why is it still rendering +?
+            this.text = "This is an open door.";
+            this.isOpaque = false;
+            this.isWalkable = true;
+        }
+    }
+}
+
 // //getters
 
 // Game.Tile.prototype.isWalkable = function() {
