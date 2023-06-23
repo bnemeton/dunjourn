@@ -547,8 +547,8 @@ class MenuScreen {
     constructor(props) {
         this.options = props.options
         this.label = props.label
-        this.indent = (Game._screenWidth/3)-12
-        this.top = (Game._screenHeight/2)-12
+        this.indent = 3
+        this.top = 2
         this.multiselect = props.multiselect || false
         // this.listItems = this.options.map(option => 
         //      {
@@ -563,14 +563,17 @@ class MenuScreen {
                 let bag = this.player.getBag();
                 if (bag.length > 0) {
                 this.options = this.player.getBag().map(item => {
+                    // console.log(item.name) // this is correct so why is
                     let menuItem = new MenuItem({
-                        label: item.name,
+                        label: item.name, //undefined? no, this.options is fine later
                         hovered: false,
                         selected: false
                         //action: //TODO implement item option menu
                     })
                     return menuItem;
                 })
+                // console.log(this.options) // this is correct...
+                return true;
                 } else {
                     this.options = [
                         new MenuItem({
@@ -588,7 +591,7 @@ class MenuScreen {
                 }
     }
     render(display) {
-        display.drawText(this.indent, this.top+1, this.label);
+        display.drawText(this.indent, this.top, this.label);
         var row = 0;
         for (let i=0; i < this.options.length; i++) {
             let text = "";
@@ -596,9 +599,9 @@ class MenuScreen {
             
             if (this.options[i].hovered) {
                 bg = "darkslategray";
-                text += ">";
+                display.drawText(this.indent-2, this.top + 2 + row, "> ")
             }
-            text = " " + this.options[i].name;
+            text = " " + this.options[i].label;
             this.options[i].position = [this.indent, this.top + 2 + row];
             this.options[i].index = i;
             // console.log(this.options[i].position)
@@ -620,10 +623,13 @@ class MenuScreen {
         }
         //mousemove to highlight menu items
         if (inputType === 'mousemove') {
-            let mousePosition = [inputData.clientX, inputData.clientY];
+            
+            let mousePosition = Game._menuDisplay.eventToPosition(inputData);
             this.options.forEach(item => {
+                // console.log(item.position) //seems fine
                 if (item.position[0] < mousePosition[0] && item.position[0] + item.label.length + 1 > mousePosition[0] && item.position[1] === mousePosition[1]) {
                     item.hovered = true;
+                    console.log(`hovered over ${item.label}`)
                 } else {
                     item.hovered = false;
                 }

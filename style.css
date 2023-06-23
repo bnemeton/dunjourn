@@ -30,7 +30,7 @@ canvas {
     height: 256px;
     background-color: rgba(0,0,0,1);
     color: #fff;
-    text-align: center;
+    text-align: left;
     padding: 3px;
     border-radius: 3px;
     position: absolute;
