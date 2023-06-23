@@ -19,12 +19,12 @@ class Player extends Entity {
         this.sight = 100;
         this.alive = true;
         this.light = new Light({
-            color: [50, 50, 50],
+            color: [65, 65, 65],
             x: this.x,
             y: this.y,
             z: this.z,
             states: [
-                [60, 60, 60]
+                [65, 65, 65]
             ]
         });
     }

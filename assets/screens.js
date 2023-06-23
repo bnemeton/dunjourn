@@ -110,7 +110,6 @@ class OptionWindow {
             case 'open':
                 this.item.open();
                 return true;
-                break;
         }
         console.log(`optionScreen okFunction called`)
         Game.Screen.playScreen.setSubScreen(null);
@@ -120,7 +119,7 @@ class OptionWindow {
     render(display) {
         var letters = 'abcdefghijklmnopqrstuvwxyz';
         let text = this.item.text;
-        if (this.item.contents.length > 0) {
+        if (this.item.contents && this.item.contents.length > 0) {
             text += " It contains: "
             for (let i = 0; i < this.item.contents.length; i++) {
                 text += `${this.item.contents[i].quantity} ${this.item.contents[i].name}`
@@ -271,7 +270,7 @@ class ItemListScreen {
         }
         // console.log(items); //let's see what this looks like. looks fine!
         if (items.length === 0) {
-            console.log(`no items, closing itemlist`) //this no longer fires, but the window still doesn't appear
+            // console.log(`no items, closing itemlist`) 
             Game.Screen.playScreen.setSubScreen(null);
         }
         this.player = player;
@@ -288,7 +287,7 @@ class ItemListScreen {
         }
         // console.log(`here are the selected indices (should be none):`)
         // console.log(this.selectedIndices)
-        console.log(`window should be labeled ${this.label}`) //this works fine, suggesting window closes *after* setup is done.
+        // console.log(`window should be labeled ${this.label}`) 
     }
 
     executeOkFunction(item, index) { //leaving these here in case i want them later
@@ -374,6 +373,27 @@ class ItemListScreen {
                     // console.log(itemY)
                     if (mouseY === itemY) {
                         this.listItems[i].hovered = true;
+                        //tooltip with item's description and options
+                        let toolTip = document.getElementById('tooltip');
+                        toolTip.style.top = inputData.y-20 + 'px';
+                        toolTip.style.left = inputData.x+15 + 'px';
+
+                        let text = this.listItems[i].description;
+                        // for (let j=0; j < this.listItems[i].options.length; j++) {
+                        //     text += `<br>${this.listItems[i].options[j]}`
+                        // }
+
+                        let toolTipText = text
+                        // let toolTip = document.getElementById('tooltip'); //now this is declared up in repositioning
+                        if (toolTipText.length > 0) {
+                            toolTip.style.display = "block"
+                            document.body.style.cursor = "crosshair"
+                        } else {
+                            toolTip.style.display = "none"
+                            document.body.style.cursor = "auto"
+                        }
+                        toolTip.innerHTML = toolTipText;
+
                         // console.log(this.listItems[i].label + " is hovered")
                         // console.log(`hovered`) //this triggers now but doesn't actually change the bg color
                         Game.refresh(); //why is it not highlighting the row?
@@ -522,6 +542,54 @@ Game.Screen.pickupScreen = new ItemListScreen({
 //     }
 // })
 
+//menu screen
+class MenuScreen {
+    constructor(props) {
+        this.options = props.options
+        this.label = props.label
+        this.indent = (Game._screenWidth/3)-12
+        this.top = (Game._screenHeight/2)-12
+        this.listItems = this.options.map(option => 
+             {
+                return {
+                    name: option.name,
+                    hovered: false
+                }
+            })
+    }
+    render(display) {
+        display.drawText(this.indent, this.top+1, this.label);
+        var row = 0;
+        for (let i=0; i < this.listItems.length; i++) {
+            let text = "";
+            let bg = "black";
+            
+            if (this.listItems[i].hovered) {
+                bg = "darkslategray";
+                text += ">";
+            }
+            text = " " + this.listItems[i].name;
+            this.listItems[i].position = [this.indent, this.top + 2 + row];
+            this.listItems[i].index = i;
+            // console.log(this.listItems[i].position)
+            display.drawText(this.indent, this.top + 2 + row, `%c{white}%b{${bg}}`+text,);
+            row++;
+        }
+    }
+    handleInput(inputType, inputData) {
+        //exit menu screen when escape is pressed
+        if (inputType === 'keydown') {
+            if (inputData.keyCode === ROT.KEYS.VK_ESCAPE) {
+                Game.Screen.playScreen.setSubScreen(null);
+                Game._menuDisplay.clear();
+                //hide menuContainer once more
+                let menuContainer = document.getElementById("menuContainer");
+                menuContainer.style.display = "none";
+                Game.refresh();
+            }
+        }
+    }
+}
 
 
 //play screen
@@ -630,6 +698,10 @@ Game.Screen.playScreen = {
             // if (this.subScreen === Game.Screen.containerScreen) {
             //     console.log(`rendering container screen!`) // LTM!!!
             // }
+            if (this.subScreen === Game.Screen.menuTest) {
+                this.subScreen.render(displays.menu);
+                return;
+            }
             this.subScreen.render(displays.main);
             return;
         }
@@ -1086,7 +1158,16 @@ Game.Screen.playScreen = {
                         this.setSubScreen(Game.Screen.pickupScreen);
                     }
                     break;
-                    
+                //test menu with spacebar
+                case ROT.KEYS.VK_SPACE:
+                    //make menuContainer visible
+                    let menuContainer = document.getElementById('menuContainer');
+                    menuContainer.style.display = 'block';
+                    //position menuContainer
+                    //render menuTest in menuDisplay
+                    Game.Screen.menuTest.render(Game._menuDisplay);
+                    this.setSubScreen(Game.Screen.menuTest);
+
             }
             }
             // if (inputType === 'mousedown')  { // never detected
@@ -1094,6 +1175,22 @@ Game.Screen.playScreen = {
             // }   
     }}
 }
+
+Game.Screen.menuTest = new MenuScreen({
+    options: [
+        {
+            name: 'option 1',
+        },
+        {
+            name: 'option 2',
+        },
+        {
+            name: 'option 3',
+        }
+    ],
+    label: `TEST MENU DO NOT EAT`,
+
+});
 
 //win screen
 Game.Screen.winScreen = {

@@ -1,10 +1,5 @@
-// //import rot.js
-// const ROT = import('../libraries/rot.min.js')
 
-
-//everything goes here!
-
-function shuffle(array) {
+function shuffle(array) { //why is this even here??? it gets used in map, but it's in game.js for some reason??
     var currentIndex = array.length, randomIndex;
     
     // While there remain elements to shuffle...
@@ -26,6 +21,7 @@ function shuffle(array) {
 var Game =  {
     _display: null,
     _textDisplay: null,
+    _menuDisplay: null,
     _currentScreen: null,
     _screenWidth: 96,
     _screenHeight: 30,
@@ -33,7 +29,8 @@ var Game =  {
     init: function() {
         // Any necessary initialization will go here.
         this._display = new ROT.Display({width: this._screenWidth, height: this._screenHeight + 1, fontSize: 20});
-        this._textDisplay = new ROT.Display({width: 32, height: this._screenHeight+8, fontSize: 16})
+        this._textDisplay = new ROT.Display({width: 32, height: this._screenHeight+8, fontSize: 16});
+        this._menuDisplay = new ROT.Display({width: 32, height: 64, fontSize: 16});
 
         // Create a helper function for binding to an event
         // and making it send it to the screen
@@ -62,7 +59,14 @@ var Game =  {
         //re-render
         this._currentScreen.render({
             main: this._display,
-            text: this._textDisplay
+            text: this._textDisplay,
+            menu: this._menuDisplay
+        });
+    },
+    menuRefresh: function() {
+        this._menuDisplay.clear();
+        this._currentScreen.render({
+            menu: this._menuDisplay
         });
     },
     getDisplay: function() {
@@ -70,6 +74,9 @@ var Game =  {
     },
     getTextDisplay: function() {
         return this._textDisplay;
+    },
+    getMenuDisplay: function() {
+        return this._menuDisplay;
     },
     getScreenWidth: function() {
         return this._screenWidth;
@@ -122,6 +129,8 @@ window.onload = function() {
     let mapContainer = document.getElementById('mapContainer')
     mapContainer.appendChild(Game.getDisplay().getContainer())
     mapContainer.appendChild(Game.getTextDisplay().getContainer())
+    let menuContainer = document.getElementById('menuContainer')
+    menuContainer.appendChild(Game.getMenuDisplay().getContainer())
     //load start screen
     Game.switchScreen(Game.Screen.startScreen)
 }

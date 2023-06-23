@@ -23,9 +23,11 @@ class ItemListItem extends ListItem {
         this.action = function() {
             return item;
         }
+        this.description = item.text;
         this.quantity = item.quantity;
         this.selected = false;
         this.hovered = false;
         this.index = "";
+        this.options = item.options;
     }
 }
