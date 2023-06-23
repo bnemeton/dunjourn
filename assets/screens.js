@@ -64,6 +64,13 @@ class OptionWindow {
         this.label = props.label
         this.indent = (Game._screenWidth/3)-12
         this.top = (Game._screenHeight/2)-12
+        this.listItems = this.options.map(option => 
+             {
+                return {
+                    name: option,
+                    hovered: false
+                }
+            })
     }
 
     setup(player) {
@@ -100,13 +107,20 @@ class OptionWindow {
         var row = 2;
         display.drawText(this.indent, this.top+row+1, this.label);
         row += 2
-        for (var i = 0; i < this.options.length; i++) {
+        for (var i = 0; i < this.listItems.length; i++) {
             // If we have an option, we want to render it.
-            if (this.options[i]) {
+            if (this.listItems[i]) {
                 // Get the letter matching the option's index
                 var letter = letters.substring(i, i + 1);
-                // Render at the correct row and add 2.
-                display.drawText(this.indent, this.top + 2 + row, letter + ' - ' + this.options[i]);
+                let text = letter + " - " + this.listItems[i].name;
+                let bg = "black"
+                if (this.listItems[i].hovered) {
+                    bg = "darkslategray";
+                }
+                this.listItems[i].position = [this.indent, this.top + 2 + row];
+                this.listItems[i].index = letter;
+                // console.log(this.listItems[i].position)
+                display.drawText(this.indent, this.top + 2 + row, `%c{white}%b{${bg}}`+text,);
                 row++;
             }
         }
@@ -121,6 +135,50 @@ class OptionWindow {
         // console.log('should be awaiting subscreen input...') // but it never hits any of the below ifs? but you can hit this console log again by hitting a key again
         //console.log(`input data: ${inputData.keyCode}`)
         // console.log(`input type: ${inputType}`)
+        
+        if (inputType === 'mousemove') {
+            // console.log(inputData.y)
+            //detect if mouse is over a list item
+            let eventData = {
+                clientX: inputData.x, //only actually need these apparently! also wait i adjusted these forever and set them back to default. what.
+                clientY: inputData.y
+            }
+                //set these values to be easier to access
+                var mouseCoords = Game._display.eventToPosition(eventData);
+                // var mouseX = mouseCoords[0]; not currently necessary
+                var mouseY = mouseCoords[1];
+                // console.log(mouseY)
+                //if mouse position matches a row, highlight that row
+                for (let i=0; i < this.listItems.length; i++) { //never true, so i'm missing something about formatting
+                    let itemY = this.listItems[i].position[1];
+                    // console.log(itemY)
+                    if (mouseY === itemY) {
+                        this.listItems[i].hovered = true;
+                        // console.log(this.listItems[i].label + " is hovered")
+                        // console.log(`hovered`) //this triggers now but doesn't actually change the bg color
+                        Game.refresh(); //why is it not highlighting the row?
+                        // this.render(Game._display); //this doesn't work either. also, game.refresh works elsewhere...
+                    } else {
+                        this.listItems[i].hovered = false;
+                        // console.log(`not hovered`)
+                        Game.refresh();
+                    }
+                }
+
+                
+        }
+
+        if (inputType === 'mousedown') {
+            // console.log('mousedown') //never triggers..
+            for (let i=0; i < this.listItems.length; i++) {
+                if (this.listItems[i].hovered) {
+                    // console.log(`clicked on ${this.listItems[i].label}`)
+                        this.okFunction(this.listItems[i].name);
+                }
+                        
+            }
+        }
+
         if (inputType === 'keydown') {
             // If the user hit escape, hit enter and can't select an item, or hit
             // enter without any items selected, simply cancel out
