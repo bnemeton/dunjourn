@@ -555,25 +555,35 @@ class MenuScreen {
         //         return new MenuItem({option})
         //     })
     }
-    setup(player) {
+    setup(player, args) {
+        // console.log(args) //item is undefined
         this.player = player;
         switch(this.label) {
             case "inventory":
                 // console.log("setting up inventory screen") //fires fine
                 let bag = this.player.getBag();
                 if (bag.length > 0) {
-                this.options = this.player.getBag().map(item => {
-                    // console.log(item.name) // this is correct so why is
-                    let menuItem = new MenuItem({
-                        label: item.name, //undefined? no, this.options is fine later
-                        hovered: false,
-                        selected: false
-                        //action: //TODO implement item option menu
-                    })
-                    return menuItem;
-                })
-                // console.log(this.options) // this is correct...
-                return true;
+                    let options = [];
+                    for (let i=0;i < bag.length; i++) {
+                        let item = bag[i];
+                        console.log(item.name) 
+                        let menuItem = new MenuItem({
+                            label: item.name, //undefined? no, this.options is fine later
+                            index: i,
+                            hovered: false,
+                            selected: false,
+                            action: function() {
+                                // console.log(`attempting to open item menu for a(n) ${item.name})`)
+                                Game.Screen.itemMenu.setup(this.player, {item: item, index: i})
+                                Game.Screen.playScreen.setSubScreen(Game.Screen.itemMenu);
+                                Game.menuRefresh();
+                            }
+                        })
+                        options.push(menuItem);
+                    }
+                    this.options = options;
+                    // console.log(this.options) // this is correct...
+                    return true;
                 } else {
                     this.options = [
                         new MenuItem({
@@ -588,7 +598,30 @@ class MenuScreen {
                     ]};
                     // console.log(this.options) //fires with correct info
                 return true;
-                }
+            case "item menu":
+                let item = args.item;
+                let index = args.index;
+                // console.log(item) //fine now
+                let options = item.options;
+                this.label = item.name;
+                this.options = options.map(option => {
+                    let action;
+                    switch(option) {
+                        case "eat":
+                            action = () => {item.eat(index)};
+                            break;
+                    }
+                    let menuItem = new MenuItem({
+                        label: option,
+                        hovered: false,
+                        selected: false,
+                        action: action
+                        })
+                    return menuItem;
+                    })
+                
+                return true;
+            }
     }
     render(display) {
         display.drawText(this.indent, this.top, this.label);
@@ -619,6 +652,10 @@ class MenuScreen {
                 let menuContainer = document.getElementById("menuContainer");
                 menuContainer.style.display = "none";
                 Game.refresh();
+            // } else { //keyboard menu controls
+            //     switch(inputData.keyCode) {
+            //         case ROT.KEYS.VK_UP:
+            // }
             }
         }
         //mousemove to highlight menu items
@@ -637,17 +674,21 @@ class MenuScreen {
             Game.menuRefresh();
         }
         //click to select menu item
-        if (inputType === 'click') {
+        if (inputType === 'mousedown') {
             let mousePosition = [inputData.clientX, inputData.clientY];
-            this.listItems.forEach(item => {
-                if (item.position[0] < mousePosition[0] && item.position[0] + item.name.length + 1 > mousePosition[0] && item.position[1] === mousePosition[1] && !item.selected) {
+            this.options.forEach(item => {
+                if (item.hovered && !item.selected) {
                     item.select()
-                } else {
+                    console.log(`selected ${item.label}`)
+                } else if (item.hovered && item.selected) {
                     item.unselect()
+                    console.log(`unselected ${item.label}` )
                 }
             })
-            if (this.multiselect === false) {
-                item.execute();
+            let selected = this.options.filter(item => item.selected);
+            console.log(selected)
+            if (this.multiselect === false && selected.length > 0) {
+                selected[0].execute(); //works
                 return;
             }
             Game.menuRefresh();
@@ -659,6 +700,12 @@ class MenuScreen {
 // inventory menu screen
 Game.Screen.inventoryMenu = new MenuScreen({
     label: "inventory",
+    multiselect: false,
+    selectable: true,
+})
+
+Game.Screen.itemMenu = new MenuScreen({
+    label: "item menu",
     multiselect: false,
     selectable: true,
 })
@@ -1083,8 +1130,8 @@ Game.Screen.playScreen = {
                             text += ` There are also some items here.`
                         }
                     }
-                    let lightLevel = this._map._lightData[currentDepth][`${actualX},${actualY}`];
-                    text += ` It is ${lightLevel} bright here.`
+                    // let lightLevel = this._map._lightData[currentDepth][`${actualX},${actualY}`];
+                    // text += ` It is ${lightLevel} bright here.`
                 }
 
                 let toolTipText = text

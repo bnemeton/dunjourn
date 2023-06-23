@@ -32,7 +32,7 @@ class WallTile extends Tile {
             fg: 'peachpuff',
             isDiggable: true,
             isOpaque: true,
-            text: "This is a wall of solid stone. You can currently dig through these, for ease-of-testing purposes."
+            text: "This is a wall of solid stone. You've heard legends of bygone heroes of ages past who could carve through walls with their bare hands. It couldn't be true, could it?"
         });
         // this.isOpaque = true;
         // this.char = '#',

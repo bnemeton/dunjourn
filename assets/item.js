@@ -9,7 +9,29 @@ class Item extends Glyph {
         this._x = props['x'] || null;
         this._y = props['y'] || null;
         this._z = props['z'] || null;
-    }
+        this.tags = props['tags'] || [];
+        //iterate through tags, giving the item the appropriate methods
+        for (let i = 0; i < this.tags.length; i++) {
+            switch (this.tags[i]) {
+                case "food":
+                    this.options.unshift('eat');
+                    this.foodValue = props['foodValue'] || 1;
+                    this.eat = function(index) {
+                        let player = Game._currentScreen._player;
+                        console.log(`attempting to eat ${this.name}`);
+                        player.hp += this.foodValue;
+                        if (player.hp > player.maxHp) {
+                            player.hp = player.maxHp;
+                        }
+                        Game._currentScreen._player.removeItem(index);
+                        Game.message(`You eat the ${this.name}.`);
+                        Game.Screen.playScreen.setSubScreen(null);
+                        return true;
+                    }
+                    break;
+                }
+            }
+        }
 
     setX(x) {
         this._x = x;

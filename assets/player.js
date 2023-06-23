@@ -71,6 +71,11 @@ class Player extends Entity {
         // console.log('trying to move!')
         var tile = map.getTile(x, y, this.getZ());
         var target = map.getEntityAt(x, y, this.getZ());
+        //if tile is a wall, you bounce off:
+        if (tile instanceof WallTile) {
+            Game.message("You bump into the wall gently.")
+            return false;
+        }
         // console.log(target);
         //on stair?
         if (z < this.getZ()) {
@@ -91,7 +96,6 @@ class Player extends Entity {
                 Game.message("You walk down the stairs.")
             }
         }
-
         // If an entity was present at the tile, check if it's us. if it is, wait a turn
         if (target === this) {
             //console.log('waiting one turn.');
@@ -123,10 +127,10 @@ class Player extends Entity {
             return true;
         // Check if the tile is diggable, and
         // if so try to dig it
-        } else if (tile.isDiggable) {
-            map.dig(x, y, z);
-            //console.log('dug terrrain!')
-            return true;
+        // } else if (tile.isDiggable) {
+        //     map.dig(x, y, z);
+        //     //console.log('dug terrrain!')
+        //     return true;
         } else if (tile instanceof DoorTile) {
             tile.toggle();
             return true;

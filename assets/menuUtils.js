@@ -3,6 +3,7 @@ class MenuItem {
         this.label = props.label;
         this.action = props.action || null;
         this.position = props.position || null;
+        this.index = props.index || null;
         }
         select() {
             this.selected = true;
@@ -11,8 +12,9 @@ class MenuItem {
             this.selected = false;
         }
         execute() {
+            // console.log(`executing ${this.label}`)
             if (this.action) {
-                return this.action();
+                this.action();
             }
         }
     }
