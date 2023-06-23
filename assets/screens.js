@@ -497,24 +497,24 @@ Game.Screen.containerScreen = new ItemListScreen({
 
 
 //inventory screen
-Game.Screen.inventoryScreen = new ItemListScreen({
-    label: "~ inventory ~",
-    multiselect: false,
-    selectable: true,
-    okFunction: function(selectedItems, selectedIndices) {
-        var item = selectedItems[0];
-        //console.log(`attempting to use a(n) ${item.name}`)
-        var window = new OptionWindow({
-            index: selectedIndices[0],
-            item: item,
-            options: item.options,
-            label: `What do you want to do with this ${item.name}?`
-        })
-        window.setup(this.player)
-        Game.Screen.playScreen.setSubScreen(window);
-        Game.refresh();
-    }
-})
+// Game.Screen.inventoryScreen = new ItemListScreen({
+//     label: "~ inventory ~",
+//     multiselect: false,
+//     selectable: true,
+//     okFunction: function(selectedItems, selectedIndices) {
+//         var item = selectedItems[0];
+//         //console.log(`attempting to use a(n) ${item.name}`)
+//         var window = new OptionWindow({
+//             index: selectedIndices[0],
+//             item: item,
+//             options: item.options,
+//             label: `What do you want to do with this ${item.name}?`
+//         })
+//         window.setup(this.player)
+//         Game.Screen.playScreen.setSubScreen(window);
+//         Game.refresh();
+//     }
+// })
 
 //pickup screen
 Game.Screen.pickupScreen = new ItemListScreen({
@@ -549,29 +549,59 @@ class MenuScreen {
         this.label = props.label
         this.indent = (Game._screenWidth/3)-12
         this.top = (Game._screenHeight/2)-12
-        this.listItems = this.options.map(option => 
-             {
-                return {
-                    name: option.name,
-                    hovered: false
+        this.multiselect = props.multiselect || false
+        // this.listItems = this.options.map(option => 
+        //      {
+        //         return new MenuItem({option})
+        //     })
+    }
+    setup(player) {
+        this.player = player;
+        switch(this.label) {
+            case "inventory":
+                // console.log("setting up inventory screen") //fires fine
+                let bag = this.player.getBag();
+                if (bag.length > 0) {
+                this.options = this.player.getBag().map(item => {
+                    let menuItem = new MenuItem({
+                        label: item.name,
+                        hovered: false,
+                        selected: false
+                        //action: //TODO implement item option menu
+                    })
+                    return menuItem;
+                })
+                } else {
+                    this.options = [
+                        new MenuItem({
+                            label: "inventory is empty, click to exit",
+                            hovered: false,
+                            selected: false,
+                            action: () => {
+                                Game.Screen.playScreen.setSubScreen(null);
+                                Game.refresh();
+                            }
+                        })
+                    ]};
+                    // console.log(this.options) //fires with correct info
+                return true;
                 }
-            })
     }
     render(display) {
         display.drawText(this.indent, this.top+1, this.label);
         var row = 0;
-        for (let i=0; i < this.listItems.length; i++) {
+        for (let i=0; i < this.options.length; i++) {
             let text = "";
             let bg = "black";
             
-            if (this.listItems[i].hovered) {
+            if (this.options[i].hovered) {
                 bg = "darkslategray";
                 text += ">";
             }
-            text = " " + this.listItems[i].name;
-            this.listItems[i].position = [this.indent, this.top + 2 + row];
-            this.listItems[i].index = i;
-            // console.log(this.listItems[i].position)
+            text = " " + this.options[i].name;
+            this.options[i].position = [this.indent, this.top + 2 + row];
+            this.options[i].index = i;
+            // console.log(this.options[i].position)
             display.drawText(this.indent, this.top + 2 + row, `%c{white}%b{${bg}}`+text,);
             row++;
         }
@@ -588,8 +618,45 @@ class MenuScreen {
                 Game.refresh();
             }
         }
+        //mousemove to highlight menu items
+        if (inputType === 'mousemove') {
+            let mousePosition = [inputData.clientX, inputData.clientY];
+            this.options.forEach(item => {
+                if (item.position[0] < mousePosition[0] && item.position[0] + item.label.length + 1 > mousePosition[0] && item.position[1] === mousePosition[1]) {
+                    item.hovered = true;
+                } else {
+                    item.hovered = false;
+                }
+            })
+            Game.menuRefresh();
+        }
+        //click to select menu item
+        if (inputType === 'click') {
+            let mousePosition = [inputData.clientX, inputData.clientY];
+            this.listItems.forEach(item => {
+                if (item.position[0] < mousePosition[0] && item.position[0] + item.name.length + 1 > mousePosition[0] && item.position[1] === mousePosition[1] && !item.selected) {
+                    item.select()
+                } else {
+                    item.unselect()
+                }
+            })
+            if (this.multiselect === false) {
+                item.execute();
+                return;
+            }
+            Game.menuRefresh();
+
+        }
     }
 }
+
+// inventory menu screen
+Game.Screen.inventoryMenu = new MenuScreen({
+    label: "inventory",
+    multiselect: false,
+    selectable: true,
+})
+
 
 
 //play screen
@@ -606,17 +673,27 @@ Game.Screen.playScreen = {
         y:-1
     },
     setSubScreen: function(subScreen) {
+        //if subscreen we're leaving is a menu, hide menu container
+        if (this.subScreen instanceof MenuScreen) {
+            let menuContainer = document.getElementById("menuContainer");
+            menuContainer.style.display = "none";
+        }
         this.subScreen = subScreen;
         if (this.subScreen === null) {
             console.log(`cleared subscreen`) //container screens immediately clear... why?
         }
         // if (this.subScreen === Game.Screen.containerScreen)
         //     {console.log(`set subscreen to containerscreen`)} //Lying To Me
-        if (this.subScreen === Game.Screen.menuTest) {
+        if (this.subScreen instanceof MenuScreen) {
+            // console.log("menu refresh on switch to menu") //firing but inventory not rendering?
+            //forgot to add the stuff to make the menuContainer visible
+            let menuContainer = document.getElementById("menuContainer");
+            menuContainer.style.display = "block";
+
             Game.menuRefresh();
-            return;
+        } else {
+            Game.refresh()
         }
-        Game.refresh()
     },
     enter: function() {
         // console.log("entering play screen..."); 
@@ -702,7 +779,7 @@ Game.Screen.playScreen = {
             // if (this.subScreen === Game.Screen.containerScreen) {
             //     console.log(`rendering container screen!`) // LTM!!!
             // }
-            if (this.subScreen === Game.Screen.menuTest) {
+            if (this.subScreen instanceof MenuScreen) {
                 this.subScreen.render(displays.menu);
                 return;
             }
@@ -1123,8 +1200,8 @@ Game.Screen.playScreen = {
                         Game.refresh();
                     } else {
                         // Show the inventory
-                        Game.Screen.inventoryScreen.setup(this._player, this._player.getBag());
-                        this.setSubScreen(Game.Screen.inventoryScreen);
+                        Game.Screen.inventoryMenu.setup(this._player);
+                        this.setSubScreen(Game.Screen.inventoryMenu);
                     }
                     break;
                 // case ROT.KEYS.VK_D:

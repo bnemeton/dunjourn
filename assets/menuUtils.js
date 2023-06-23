@@ -1,8 +1,19 @@
 class MenuItem {
-    constructor(label, position, action) {
-        this.label = label;
-        this.action = action || null;
-        this.position = position || null;
+    constructor(props) {
+        this.label = props.label;
+        this.action = props.action || null;
+        this.position = props.position || null;
+        }
+        select() {
+            this.selected = true;
+        }
+        unselect() {
+            this.selected = false;
+        }
+        execute() {
+            if (this.action) {
+                return this.action();
+            }
         }
     }
 

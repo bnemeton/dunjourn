@@ -16,7 +16,7 @@ class Entity extends Glyph{
         // this.setX = function(x) {
         //     this._x = x;
         this.bagSlots = properties['bagSlots'] || 10;
-        this.bag = new Array(this.bagSlots);
+        this.bag = [];
     }
 
     //methods ffs
@@ -76,13 +76,12 @@ class Entity extends Glyph{
                 }
             }
         }
-        for (var i = 0; i < this.bag.length; i++) {
-            if (!this.bag[i]) {
-                item._x = null;
-                item._y = null;
-                item._z = null;
-                this.bag[i] = item;
-                return true;
+        if (this.hasFreeBagSlot()) {
+            for (var i=0; i<this.bag.length; i++) {
+                if (!this.bag[i]) {
+                    this.bag[i] = item;
+                    return true;
+                }
             }
         }
         return false;
@@ -91,7 +90,7 @@ class Entity extends Glyph{
         this.bag[index] = null;
     }
     hasFreeBagSlot() {
-        for (var i = 0; i < this.bag.length; i++) {
+        for (var i = 0; i < this.bagSlots; i++) {
             if (!this.bag[i]) {
                 return true;
             }
@@ -103,20 +102,29 @@ class Entity extends Glyph{
         // the indices for the array returned by map.getItemsAt
         var mapItems = this._map.getItemsAt(this.getX(), this.getY(), this.getZ());
         var added = 0;
-        // Iterate through all indices.
-        for (var i = 0; i < indices.length; i++) {
-            // Try to add the item. If our inventory is not full, then splice the 
-            // item out of the list of items. In order to fetch the right item, we
-            // have to offset the number of items already added.
-
-            if (this.giveItem(mapItems[indices[i]  - added])) {
-                //console.log('picked up a ' + mapItems[indices[i] - added].name)
-                mapItems.splice(indices[i] - added, 1);
-                added++;
-            } else {
-                // Inventory is full
-                break;
+        //check if we have a free bag slot
+        if (this.hasFreeBagSlot()) {
+            //find the first open slot lower than bagSlots
+            for (var i = 0; i < this.bagSlots; i++) {
+                if (!this.bag[i]) {
+                    //add the item to the bag
+                    this.bag[i] = mapItems[indices[0]];
+                    //remove the item from the map
+                    mapItems.splice(indices[0], 1);
+                    //increment added
+                    added++;
+                    //remove the index from indices
+                    indices.splice(0, 1);
+                    //if we've added all the items, break
+                    if (indices.length === 0) {
+                        return true;
+                    }
+                }
             }
+            //if we don't have a free bag slot, return false
+        } else {
+            Game.message('Your inventory is full.')
+            return false;
         }
         // Update the map items
         this._map.setItemsAt(this.getX(), this.getY(), this.getZ(), mapItems);
