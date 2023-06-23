@@ -612,6 +612,10 @@ Game.Screen.playScreen = {
         }
         // if (this.subScreen === Game.Screen.containerScreen)
         //     {console.log(`set subscreen to containerscreen`)} //Lying To Me
+        if (this.subScreen === Game.Screen.menuTest) {
+            Game.menuRefresh();
+            return;
+        }
         Game.refresh()
     },
     enter: function() {

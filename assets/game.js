@@ -30,7 +30,7 @@ var Game =  {
         // Any necessary initialization will go here.
         this._display = new ROT.Display({width: this._screenWidth, height: this._screenHeight + 1, fontSize: 20});
         this._textDisplay = new ROT.Display({width: 32, height: this._screenHeight+8, fontSize: 16});
-        this._menuDisplay = new ROT.Display({width: 32, height: 64, fontSize: 16});
+        this._menuDisplay = new ROT.Display({width: 32, height: 16, fontSize: 16});
 
         // Create a helper function for binding to an event
         // and making it send it to the screen
@@ -56,6 +56,7 @@ var Game =  {
         //clear the screen
         this._display.clear();
         this._textDisplay.clear();
+        this._menuDisplay.clear();
         //re-render
         this._currentScreen.render({
             main: this._display,
