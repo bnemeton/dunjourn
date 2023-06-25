@@ -14,7 +14,9 @@ class Item extends Glyph {
         for (let i = 0; i < this.tags.length; i++) {
             switch (this.tags[i]) {
                 case "food":
-                    this.options.unshift('eat');
+                    if (!this.options.includes('eat')) {
+                        this.options.unshift('eat');
+                    }
                     this.foodValue = props['foodValue'] || 1;
                     this.eat = function(index) {
                         let player = Game._currentScreen._player;
@@ -23,9 +25,8 @@ class Item extends Glyph {
                         if (player.hp > player.maxHp) {
                             player.hp = player.maxHp;
                         }
-                        Game._currentScreen._player.removeItem(index);
-                        Game.message(`You eat the ${this.name}.`);
-                        Game.Screen.playScreen.setSubScreen(null);
+                        this.drop();
+                        Game.Screen.playScreen._map.removeItem(this);
                         return true;
                     }
                     break;

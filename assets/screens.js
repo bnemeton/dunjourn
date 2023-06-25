@@ -26,6 +26,25 @@ fg = ROT.Color.toRGB([
 
 var ashColor = "%c{" + fg + "}%b{" + bg + "}"
 
+//message update helper
+let updateMessages = function() {
+    let messages = Game.messages;
+    let messageHeight = 0;
+    for (let i=0; i < messages.length; i++) {
+        //draw each message, adding its line count to height
+        messageHeight += Game._textDisplay.drawText(
+        0,
+            messageHeight,
+            '%c{white}%b{black}' + messages[i]
+        );
+    }
+    if (messageHeight >= Game._screenHeight+8) {
+        messages.shift();
+        Game.messages.shift();
+        Game.refresh();
+    }
+}
+
 //start screen
 Game.Screen.startScreen = {
     enter: function() {console.log('entered start screen...')},
@@ -616,7 +635,18 @@ class MenuScreen {
                     let action;
                     switch(option) {
                         case "eat":
-                            action = () => {item.eat(index)};
+                            action = () => {
+                                Game.message(`You eat the ${item.name}. Yum!`);
+                                item.eat(index);
+                                Game.Screen.playScreen.setSubScreen(null); // this doesn't happen though?
+                            };
+                            break;
+                        case "drop":
+                            action = () => {
+                                console.log("dropping item") //console logs immediately, when it should,
+                                Game._currentScreen._player.dropItem(index); //only seems to happen when you close the menu? oh bc item menu doesn't close
+                                Game.Screen.playScreen.setSubScreen(null); //works now
+                            };
                             break;
                     }
                     let menuItem = new MenuItem({
@@ -849,7 +879,8 @@ Game.Screen.playScreen = {
                 this.subScreen.render(displays.menu);
                 return;
             }
-            this.subScreen.render(displays.main);
+            this.subScreen.render(displays.menu);
+            this.subScreen.render(displays.text);
             return;
         }
         // console.log('rendering screen!')
@@ -1033,21 +1064,7 @@ Game.Screen.playScreen = {
          //render messages and stat bar
          var stats = `%c{white}%b{black} HP: ${this._player.getHp()} / ${this._player.getMaxHp()}   GLYPHS: ${this._player.glyphs}   ATK: ${this._player.damage}   ARMOR: ${this._player.armor}`
          displays.main.drawText(0, screenHeight, stats)
-         let messages = Game.messages;
-         let messageHeight = 0;
-         for (let i=0; i < messages.length; i++) {
-             //draw each message, adding its line count to height
-             messageHeight += displays.text.drawText(
-                0,
-                 messageHeight,
-                 '%c{white}%b{black}' + messages[i]
-             );
-         }
-        if (messageHeight >= screenHeight+8) {
-            messages.shift();
-            Game.messages.shift();
-            Game.refresh();
-        }
+         updateMessages();
     },
     handleInput: function(inputType, inputData) {
         if (this._map.getEngine()._lock === 1) {   

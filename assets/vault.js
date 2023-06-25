@@ -26,7 +26,7 @@ var vault = {
     loaf: {
         name: 'loaf',
         text: "Stale loaf of bread. It's hard and chewy, but filling.",
-        char: 'ࡇ',
+        char: '⊕',
         fg: 'lightsalmon',
         bg: 'black',
         options: [

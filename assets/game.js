@@ -65,10 +65,12 @@ var Game =  {
         });
     },
     menuRefresh: function() {
+        //wait adding testDisplay here makes it clear whenever you're in a menu???
         this._menuDisplay.clear();
         this._currentScreen.render({
-            menu: this._menuDisplay
+            menu: this._menuDisplay,
         });
+        updateMessages(); //hmm only get messages once screen refreshes on mousemove.
     },
     getDisplay: function() {
         return this._display;
