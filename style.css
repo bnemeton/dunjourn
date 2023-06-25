@@ -7,7 +7,6 @@ body {
 canvas {
     border: 1px dashed white;
     padding: 10px;
-    /* cursor: help; */
 
     
 }
@@ -21,9 +20,24 @@ canvas {
     padding: 3px;
     border-radius: 3px;
    
-    /* Position the tooltip text - see examples below! */
     position: fixed;
     z-index: 1;
+  }
+
+  #menuContainer {
+    display: none;
+    width: 256px;
+    height: 256px;
+    background-color: rgba(0,0,0,1);
+    color: #fff;
+    text-align: left;
+    padding: 3px;
+    border-radius: 3px;
+    position: absolute;
+    z-index: 1;
+  /* center on the screen */
+    top: 15%;
+    left: 20%;
   }
 
   body:hover #tooltip {

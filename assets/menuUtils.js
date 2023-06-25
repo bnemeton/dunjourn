@@ -1,8 +1,21 @@
 class MenuItem {
-    constructor(label, position, action) {
-        this.label = label;
-        this.action = action || null;
-        this.position = position || null;
+    constructor(props) {
+        this.label = props.label;
+        this.action = props.action || null;
+        this.position = props.position || null;
+        this.index = props.index || null;
+        }
+        select() {
+            this.selected = true;
+        }
+        unselect() {
+            this.selected = false;
+        }
+        execute() {
+            // console.log(`executing ${this.label}`)
+            if (this.action) {
+                this.action();
+            }
         }
     }
 
@@ -23,9 +36,11 @@ class ItemListItem extends ListItem {
         this.action = function() {
             return item;
         }
+        this.description = item.text;
         this.quantity = item.quantity;
         this.selected = false;
         this.hovered = false;
         this.index = "";
+        this.options = item.options;
     }
 }

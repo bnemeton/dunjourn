@@ -17,10 +17,24 @@ var items = {
         bg: 'black',
         options: [
             'open',
-            'store',
+            'stow',
+            'retrieve',
             'drop'
         ],
         container: true
-    }
+    },
+    loaf: {
+        name: 'loaf',
+        text: "A stale chunk of bread. It's hard and chewy, but filling.",
+        char: '~',
+        fg: 'lightsalmon',
+        bg: 'black',
+        options: [
+            "drop",
+        ],
+        tags: [
+            'food'
+        ],
+    } 
 
 }

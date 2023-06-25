@@ -32,7 +32,7 @@ class WallTile extends Tile {
             fg: 'peachpuff',
             isDiggable: true,
             isOpaque: true,
-            text: "This is a wall of solid stone. You can currently dig through these, for ease-of-testing purposes."
+            text: "This is a wall of solid stone. You've heard legends of bygone heroes of ages past who could carve through walls with their bare hands. It couldn't be true, could it?"
         });
         // this.isOpaque = true;
         // this.char = '#',
@@ -83,6 +83,34 @@ class SignTile extends Tile {
     setText(string) {
         this.signText = string;
         this.text = `There is a sign here. It reads:"${this.signText}"`;
+    }
+}
+
+class DoorTile extends Tile {
+    constructor() {
+        super({
+            char: '+',
+            fg: 'tan',
+            isWalkable: false,
+            isOpaque: true,
+            text: "This is a closed door."
+        })
+        this.closed = true;
+    }
+    toggle() {
+        this.closed = !this.closed;
+        if (this.closed) {
+            this.char = '+';
+            this.text = "This is a closed door."
+            this.isOpaque = true;
+            this.isWalkable = false;
+        } else {
+            this.char = '-'; //every other part of toggling works, why not this?
+            // console.log(this.char); //yeah this is fine... so why is it still rendering +?
+            this.text = "This is an open door.";
+            this.isOpaque = false;
+            this.isWalkable = true;
+        }
     }
 }
 

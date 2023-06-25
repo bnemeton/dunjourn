@@ -29,6 +29,9 @@ var buildRow = function (row) {
                 rowTiles.push(newSign);
                 rowSigns.push(newSign);
                 break;
+            case "+":
+                rowTiles.push(new DoorTile());
+                break;
         }
         //if none of the standard tiles, check enemies for a match
         if (glyph != "." && glyph != "#" && glyph != ">" && glyph != "<" && glyph != "Ħ") {
