@@ -545,8 +545,11 @@ Game.Screen.pickupScreen = new ItemListScreen({
 //menu screen
 class MenuScreen {
     constructor(props) {
+        console.log(props)
         this.options = props.options
         this.label = props.label
+        this.type = props.label
+        this.text= ""
         this.indent = 3
         this.top = 2
         this.multiselect = props.multiselect || false
@@ -556,7 +559,7 @@ class MenuScreen {
         //     })
     }
     setup(player, args) {
-        // console.log(args) //item is undefined
+        console.log(args) //this is even correct! how is item menu not working??
         this.player = player;
         switch(this.label) {
             case "inventory":
@@ -568,13 +571,13 @@ class MenuScreen {
                         let item = bag[i];
                         console.log(item.name) 
                         let menuItem = new MenuItem({
-                            label: item.name, //undefined? no, this.options is fine later
+                            label: item.name, 
                             index: i,
                             hovered: false,
                             selected: false,
                             action: function() {
-                                // console.log(`attempting to open item menu for a(n) ${item.name})`)
-                                Game.Screen.itemMenu.setup(this.player, {item: item, index: i})
+                                console.log(`attempting to open item menu for a(n) ${item.name}`) //this seems to console log the right name (the one we clicked on)
+                                Game.Screen.itemMenu.setup(this.player, {item: item, index: i}) //but this is clearly setting up the wrong menu? how?
                                 Game.Screen.playScreen.setSubScreen(Game.Screen.itemMenu);
                                 Game.menuRefresh();
                             }
@@ -582,6 +585,10 @@ class MenuScreen {
                         options.push(menuItem);
                     }
                     this.options = options;
+                    //unselect all options
+                    this.options.forEach(option => {
+                        option.unselect()
+                    })
                     // console.log(this.options) // this is correct...
                     return true;
                 } else {
@@ -601,7 +608,8 @@ class MenuScreen {
             case "item menu":
                 let item = args.item;
                 let index = args.index;
-                // console.log(item) //fine now
+                this.text = item.text;
+                console.log(item) 
                 let options = item.options;
                 this.label = item.name;
                 this.options = options.map(option => {
@@ -625,7 +633,8 @@ class MenuScreen {
     }
     render(display) {
         display.drawText(this.indent, this.top, this.label);
-        var row = 0;
+        display.drawText(this.indent, this.top + 2, this.text);
+        var row = 3;
         for (let i=0; i < this.options.length; i++) {
             let text = "";
             let bg = "black";
@@ -646,6 +655,8 @@ class MenuScreen {
         //exit menu screen when escape is pressed
         if (inputType === 'keydown') {
             if (inputData.keyCode === ROT.KEYS.VK_ESCAPE) {
+                //so item menus don't just reload the previous one!!
+                this.label = this.type;
                 Game.Screen.playScreen.setSubScreen(null);
                 Game._menuDisplay.clear();
                 //hide menuContainer once more
@@ -686,9 +697,10 @@ class MenuScreen {
                 }
             })
             let selected = this.options.filter(item => item.selected);
-            console.log(selected)
+            console.log(selected) //this shows the correct selected item, but see below
             if (this.multiselect === false && selected.length > 0) {
-                selected[0].execute(); //works
+                console.log(selected[0]) // this is fine! is the problem in the execute function?
+                selected[0].execute(); //in inventory, always opens whatever item you first opened, even if you close and reopen inventory?
                 return;
             }
             Game.menuRefresh();
@@ -728,6 +740,7 @@ Game.Screen.playScreen = {
     setSubScreen: function(subScreen) {
         //if subscreen we're leaving is a menu, hide menu container
         if (this.subScreen instanceof MenuScreen) {
+            Game._menuDisplay.clear();
             let menuContainer = document.getElementById("menuContainer");
             menuContainer.style.display = "none";
         }
