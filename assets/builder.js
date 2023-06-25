@@ -36,10 +36,10 @@ var buildRow = function (row) {
         //if none of the standard tiles, check enemies for a match
         if (glyph != "." && glyph != "#" && glyph != ">" && glyph != "<" && glyph != "Ħ") {
             // console.log(glyph+` found in map.`) // works fine
-            for (var enemy in enemies) {
+            for (var creature in bestiary) {
                 // console.log(enemies[enemy]) //ah for in iterates over the keys, not the values, whoops
-                let thisEnemy = enemies[enemy];
-                if (thisEnemy.char == glyph) {
+                let thisGuy = bestiary[creature];
+                if (thisGuy.char == glyph) {
                     // console.log(`found an ${enemy.name}`); //never firing....
                     //create enemy and set position
                     // let newEnemy = new Enemy(thisEnemy); //needlessly generating an enemy object we will regenerate later
@@ -47,7 +47,7 @@ var buildRow = function (row) {
                     rowTiles.push(new FloorTile());
                     rowEnemies.push(
                         {
-                        type: `${enemy}`,
+                        type: `${thisGuy.name}`,
                         x: x
                         }
                     );
@@ -55,8 +55,8 @@ var buildRow = function (row) {
                 }
             }
             //check items for a match
-            for (var item in items) {
-                let thisItem = items[item];
+            for (var item in vault) {
+                let thisItem = vault[item];
                 if (thisItem.char == glyph) {
                     // console.log(`found an ${enemy.name}`); //never firing....
                     //create enemy and set position

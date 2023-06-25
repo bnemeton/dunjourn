@@ -1,5 +1,6 @@
 class Enemy extends Entity {
     constructor(properties) {
+        console.log(properties); //undefined...
         super(properties);
         this.hp = properties['hp'] || 1;
         this.actor = true;
@@ -9,12 +10,24 @@ class Enemy extends Entity {
         this.luck = properties['luck'] || 1.0;
         this.bagSlots = properties['bagSlots'] || 5;
         this.attacker = properties['attacker'] || true;
-        this.corpseRate = properties['corpseRate'] || 0;
+        // this.corpseRate = properties['corpseRate'] || 0;
         this.foes = properties['foes'] || ['branded'];
         this.wants = properties['wants'] || [];
         this.friends = properties["friends"] || [];
         this.maxSpeed = properties['maxSpeed'] || 1;
         this.mood = properties['mood'] || "angry";
+        this.loot = properties['loot'] || {
+            drops: [
+                {
+                    name: "bit of string",
+                    chance: 75
+                },
+                {
+                    name: "bit of wire",
+                    chance: 10
+                }
+            ]
+        };
         
     }
     wander() {
@@ -218,14 +231,30 @@ class Enemy extends Entity {
         return false;
     }
     die(attacker) {
-        if (this.corpseRate > 0) {
-            this.tryDropCorpse();
-        }
+        // replacing corpse item class with unique corpse items in creature loot object
+        // if (this.corpseRate > 0) {
+        //     this.tryDropCorpse();
+        // }
         this.dropLoot();
         this.getMap().removeEntity(this);
         Game.message(`The ${this.name} is killed by a ${attacker.name}!`)
     }
     dropLoot() {
+        let dropNames = [];
+        // for each item in this.loot.drops, add if roll below drop chance
+        for (let i = 0; i < this.loot.drops.length; i++) {
+            if (Math.round(Math.random() * 100) < this.loot.drops[i].chance) {
+                dropNames.push(this.loot.drops[i].name);
+            }
+        }
+        // for each item in dropNames, create item and drop
+        for (let i = 0; i < dropNames.length; i++) {
+            if (dropNames[i] in vault) {
+                let item = new Item(vault[dropNames[i]]);
+                this._map.addItem(this.getX(), this.getY(), this.getZ(), item);
+            }
+        }
+        //drop items in bag
         for (let i = 0; i < this.bag.length; i++) {
             if (this.bag[i]){
                 while (this.bag[i] && this.bag[i].quantity > 0) {
@@ -234,6 +263,7 @@ class Enemy extends Entity {
                 //console.log(`a dying ${this.name} dropped a ${this.bag[i].name}`) //this is printing but the item isn't being placed on the map
             }
         }
+
     }
     tryDropCorpse() {
         if (Math.round(Math.random() * 100) < this.corpseRate) {

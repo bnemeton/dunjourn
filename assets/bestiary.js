@@ -1,4 +1,4 @@
-var enemies = {
+var bestiary = {
 
     // goblin enemy
     goblin: {
@@ -8,31 +8,35 @@ var enemies = {
         armor: 0,
         luck: 1,
         bagSlots: 5,
-        corpseRate: 100,
         foes: ["player"],
-        friends: ["goblin"],
+        friends: ["goblin", "rat"],
         sight: 10,
         maxSpeed: 1,
         char: "g",
-        fg: "green",
+        fg: "lightgreen",
         bg: "black"
     },
     //rat enemy
     rat: {
         name: "rat",
-        hp: 5,
+        hp: 3,
         damage: 1,
         armor: 0,
         luck: 1,
         bagSlots: 0,
-        corpseRate: 100,
         foes: ["player"],
-        friends: ["rat"],
+        friends: ["rat", "goblin"],
         sight: 10,
         maxSpeed: 1,
-        char: "r",
+        char: "ࡎ",
         fg: "lightbrown",
-        bg: "black"
+        bg: "black",
+        loot: [
+            {
+                name: "rat corpse",
+                chance: 100
+            }
+        ]
     }
 
 };

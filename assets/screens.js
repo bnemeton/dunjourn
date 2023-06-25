@@ -769,8 +769,8 @@ Game.Screen.playScreen = {
         // console.log(dungeon._enemies); //this is fine
         dungeon._enemies.forEach(enemy => {
             //create new enemy of appropriate type
-            // console.log(`attempting to create a(n) ${enemy.type} at ${enemy.x},${enemy.y} on dungeon floor ${(enemy.z)+1}`); //works fine now
-            var newEnemy = new Enemy(enemies[enemy.type]);
+            console.log(`attempting to create a(n) ${enemy.type} at ${enemy.x},${enemy.y} on dungeon floor ${(enemy.z)+1}`); //works fine, so why is the goblin not spawning
+            var newEnemy = new Enemy(bestiary[enemy.type]);
             // console.log(newEnemy.name); //seems to create a real enemy, not sure why rot.js is tripping up
             //set enemy position
             newEnemy.setX(enemy.x);
@@ -785,21 +785,21 @@ Game.Screen.playScreen = {
             //initiate bagIndex
             var bagIndex = 0;
             console.log(`spawning a(n) ${item.type}`)
-            if (items[item.type].container === true) {
+            if (vault[item.type].container === true) {
                 let contents = [];
                 //iterate over levelContainers[bagIndex], creating a new item for each item in the container
                 levelContainers[bagIndex].forEach(item => {
                     //create new item of appropriate type
-                    let newSubItem = new Item(items[item]);
+                    let newSubItem = new Item(vault[item]);
                     //add item to contents
                     contents.push(newSubItem);
                     console.log(`Putting a(n) ${newSubItem.name} in a container.`)
                 })
                 //increment bagIndex
                 bagIndex++
-                var newItem = new Container(items[item.type], contents);
+                var newItem = new Container(vault[item.type], contents);
             } else {
-                var newItem = new Item(items[item.type]);
+                var newItem = new Item(vault[item.type]);
             }
         
             //set item position
