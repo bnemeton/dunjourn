@@ -10,12 +10,14 @@ var buildRow = function (row) {
     for (var x = 0; x < row.length; x++) {
         // console.log(row[x]) //duh whoops
         let glyph = row[x];
+        // console.log(glyph); //now this is fine
         //switch statement
         switch (glyph) {
             case ".":
                 rowTiles.push(new FloorTile());
                 break;
             case "#":
+                // console.log("pushing walltile")
                 rowTiles.push(new WallTile());
                 break;
             case ">":
@@ -80,20 +82,23 @@ var buildRow = function (row) {
     results.push(rowEnemies);
     results.push(rowSigns);
     results.push(rowItems);
+    console.log(results);
     return results;
 }
 
 
-var buildFloor = function (tiles, depth) {
+var buildFloor = function (dungeon, depth) {
     // console.log(tiles); // seems correct, which i would expect
     let results = [];
     var floorTiles = [];
     var floorEnemies = [];
-    var floorSignText = levelSigns[depth];
+    // console.log(dungeon.signs[depth]) //looks fine so why is floorSignText undefined?
+    var floorSignText = dungeon.signs[depth];
+    // console.log(floorSignText)
     var floorItems = [];
     var signIndex = 0;
-    for (var y = 0; y < tiles.length; y++) {
-        let builtRow = buildRow(tiles[y]);
+    for (var y = 0; y < dungeon.map[depth].length; y++) {
+        let builtRow = buildRow(dungeon.map[depth][y]);
         let rowTiles = builtRow[0];
         let rowEnemies = builtRow[1];
         let rowItems = builtRow[3];
@@ -102,7 +107,7 @@ var buildFloor = function (tiles, depth) {
         for (var i = 0; i < rowTiles.length; i++) {
             if (rowTiles[i] instanceof SignTile) {
             rowTiles[i].setText(floorSignText[signIndex]); 
-            console.log(`sign at ${i},${y}: ${floorSignText[signIndex]}`); //this works now
+            // console.log(`sign at ${i},${y}: ${floorSignText[signIndex]}`); //this works now
             signIndex++;
             }
         }
@@ -129,20 +134,22 @@ var buildFloor = function (tiles, depth) {
 }
 
 class Builder {
-    constructor(tilemap) {
-        this._width = tilemap[0][0].length;
-        this._height = tilemap[0].length;
-        this._depth = tilemap.length;
+    constructor(dungeon) {
+        // console.log(dungeon.map);
+        this._width = dungeon.map[0][0].length;
+        this._height = dungeon.map[0].length;
+        this._depth = dungeon.map.length;
         this._tiles = [];
         this._enemies = [];
         this._items = [];
+        // this.signText = dungeon.signs
 
         //console log the enemies object for me right quick
         // console.log(enemies); //ugh no of course it's fine
         // build dungeon
         for (var z = 0; z < this._depth; z++) {
             // build each floor of the dungeon
-            let floor = buildFloor(tilemap[z], z);
+            let floor = buildFloor(dungeon, z);
             // console.log(`floor tiles: ${floor[0]}`); //fixed
             // console.log(`floor enemies: ${floor[1]}`); //fixed
             this._tiles.push(floor[0]);

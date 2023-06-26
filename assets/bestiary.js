@@ -28,7 +28,7 @@ var bestiary = {
         friends: ["rat", "goblin"],
         sight: 10,
         maxSpeed: 1,
-        char: "ࡎ",
+        char: "r",
         fg: "lightbrown",
         bg: "black",
         loot: [
