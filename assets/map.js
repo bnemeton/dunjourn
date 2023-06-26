@@ -26,8 +26,7 @@ class Map {
                 [175, 175, 125]
             ]
         });
-        this._lights = [testLight
-        ];
+        this._lights = [[testLight],[]];
         //lightData
         this._lightData = [];
         //add empty lightdata object for each floor
@@ -65,9 +64,12 @@ class Map {
     updateLightData(z) {
         var map = this;
         //iterate over lights and flicker them
-        for (let i = 0; i < this._lights.length; i++) {
-            this._lights[i].flicker();
+        if (this._lights[z].length > 0) {
+            for (let i = 0; i < this._lights[z].length; i++) {
+                this._lights[z][i].flicker();
+            }
         }
+        
         function reflectivityCallback(x, y) {
             let tile = map.getTile(x, y, z);
             switch (tile.char) {
