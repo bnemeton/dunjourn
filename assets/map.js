@@ -1,6 +1,6 @@
 class Map {
     constructor(tiles, player) {
-        // console.log(tiles); //undefined, bc it's undefined from the builder
+        console.log(tiles); //undefined, bc it's undefined from the builder
     
         this._tiles = tiles;
         // cache the width and height based
@@ -218,9 +218,9 @@ class Map {
     }
     getRandomFloorPosition(z) {
         // Randomly select a tile which is a floor
-
+        // console.log(this._tiles) // weird empty array of arrays
         var thisFloorTiles = this._tiles[z];
-        // console.log(thisFloorTiles);
+        // console.log(thisFloorTiles); //weird empty array of arrays
 
         var empties = [];
 

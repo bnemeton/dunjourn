@@ -47,28 +47,38 @@ let updateMessages = function() {
 
 //start screen
 Game.Screen.startScreen = {
-    enter: function() {console.log('entered start screen...')},
+    enter: function() {console.log('entered start screen...')
+    Game.messages = [
+        `Welcome to dunjourn; load a dungeon using the upload dungeon button below the screen.
+        
+        Messages, combat log, and dialogue will appear here.`
+    ]},
     exit: function() {console.log('exited start screen.')},
     render: function(displays) {
-        displays.main.drawText(32, 6, foreColor + "DUNJOURN 0.0.1");
-        displays.main.drawText(32, 8, ashColor + "press [enter] to start");
-        displays.main.drawText(22, 12, ashColor + `
-                                            there's no game here yet! still working on initial setup.
+        displays.main.drawText(16, 6, foreColor + "DUNJOURN 0.0.1");
+        displays.main.drawText(16, 8, ashColor + `
+        load a dungeon with picker below, then:
+        press [enter] to start"`);
+        displays.main.drawText(16, 12, ashColor + `
+                                            there's no real game here yet! still working on initial setup.
 
 
                                             go to /about.html for what the hell is going on,
                                             & a reference of commands!
 
-                                            go to /outline.html for planned features!
+                                            go to /outline.html for notes on development
                                             `)
-        displays.text.drawText(0, 0, ashColor + `
-        Messages and combat log will appear here.`)
+        updateMessages();
     },
     handleInput: function(inputType, inputData) {
         // when [enter] is pressed, go to the play screen
         if (inputType === 'keydown') {
             if (inputData.keyCode === ROT.KEYS.VK_RETURN) {
-                Game.switchScreen(Game.Screen.playScreen);
+                if (Game.Dungeon.map){
+                    Game.switchScreen(Game.Screen.playScreen);
+                } else {
+                    Game.message('Load a dungeon useing the "load dungeon" button below!')
+                }
             }
         }
     }
@@ -564,7 +574,7 @@ Game.Screen.pickupScreen = new ItemListScreen({
 //menu screen
 class MenuScreen {
     constructor(props) {
-        console.log(props)
+        // console.log(props)
         this.options = props.options
         this.label = props.label
         this.type = props.label
@@ -799,13 +809,16 @@ Game.Screen.playScreen = {
         // var depth = 1;
         //retrieve the tiles from the level object
         // console.log(level); //this works fine, level is available
-        let dungeonArray = splitLevel(blankLevel);
+        let dungeonArray = splitLevel(Game.Dungeon.map);
+        // console.log(dungeonArray); //this works fine
+        Game.Dungeon.map = dungeonArray;
         // console.log(blankLevel) //works fine
         // console.log(levelArray); //fixed
 
-        var dungeon = new Builder(dungeonArray);
+        var dungeon = new Builder(Game.Dungeon);
         // console.log(tiles); //empty now! gah!
         this._player = new Player();
+        // console.log(dungeon.getTiles())
         this._map = new Map(dungeon.getTiles(), this._player);
         this._map.getEngine().start();
         // add enemies from dungeon enemies
@@ -813,7 +826,8 @@ Game.Screen.playScreen = {
         dungeon._enemies.forEach(enemy => {
             //create new enemy of appropriate type
             console.log(`attempting to create a(n) ${enemy.type} at ${enemy.x},${enemy.y} on dungeon floor ${(enemy.z)+1}`); //works fine, so why is the goblin not spawning
-            var newEnemy = new Enemy(bestiary[enemy.type]);
+            console.log(Game.Dungeon.bestiary)
+            var newEnemy = new Enemy(Game.Dungeon.bestiary[enemy.type]);
             // console.log(newEnemy.name); //seems to create a real enemy, not sure why rot.js is tripping up
             //set enemy position
             newEnemy.setX(enemy.x);
@@ -828,21 +842,22 @@ Game.Screen.playScreen = {
             //initiate bagIndex
             var bagIndex = 0;
             console.log(`spawning a(n) ${item.type}`)
-            if (vault[item.type].container === true) {
+            // console.log(Game.Dungeon.vault)
+            if (Game.Dungeon.vault[item.type].tags.includes('container')) {
                 let contents = [];
                 //iterate over levelContainers[bagIndex], creating a new item for each item in the container
-                levelContainers[bagIndex].forEach(item => {
+                Game.Dungeon.containers[bagIndex].forEach(item => {
                     //create new item of appropriate type
-                    let newSubItem = new Item(vault[item]);
+                    let newSubItem = new Item(Game.Dungeon.vault[item]);
                     //add item to contents
                     contents.push(newSubItem);
                     console.log(`Putting a(n) ${newSubItem.name} in a container.`)
                 })
                 //increment bagIndex
                 bagIndex++
-                var newItem = new Container(vault[item.type], contents);
+                var newItem = new Container(Game.Dungeon.vault[item.type], contents);
             } else {
-                var newItem = new Item(vault[item.type]);
+                var newItem = new Item(Game.Dungeon.vault[item.type]);
             }
         
             //set item position

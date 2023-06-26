@@ -14,7 +14,7 @@ var splitLevel = function (dungeon) {
     let floors = dungeon.split("X");
     // console.log(floors); // seems fine
     for (var i = 0; i < floors.length; i++) {
-        let rows = floors[i].split("\n");
+        let rows = floors[i].split("\r\n");
         let levelArray = [];
         for (var j = 0; j < rows.length; j++) {
             let splitRow = [];
