@@ -48,7 +48,7 @@ class Map {
         this.addEntityAtRandomPosition(player, 0);
         //set player light location & add player light to map
         player.light.setPosition(player.getX(), player.getY(), player.getZ());
-        this._lights.push(player.light);
+        this._lights[player.getZ()].push(player.light);
         console.log(`added player light at ${player.light.getX()}, ${player.light.getY()}`)
         
     }
@@ -65,7 +65,7 @@ class Map {
         var map = this;
         //iterate over lights and flicker them
         if (this._lights[z].length > 0) {
-            for (let i = 0; i < this._lights[z].length; i++) {
+            for (let i=0; i < this._lights[z].length; i++) {
                 this._lights[z][i].flicker();
             }
         }

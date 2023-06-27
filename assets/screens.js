@@ -77,7 +77,10 @@ Game.Screen.startScreen = {
                 if (Game.Dungeon.map){
                     Game.switchScreen(Game.Screen.playScreen);
                 } else {
-                    Game.message('Load a dungeon useing the "load dungeon" button below!')
+                    Game.message(`
+                    
+                    No dungeon loaded! Load a dungeon using the input below the screen!`)
+                    updateMessages();
                 }
             }
         }
@@ -932,19 +935,21 @@ Game.Screen.playScreen = {
 
                
             });
-        this.visibleCells = visibleCells;
+
         this._map.updateLightData(currentDepth);
         var lightData = this._map.getLightData();
-        //check each visible cell for light
+        // check each visible cell for light
         for (var cell in visibleCells) {
-            //if cell is dark, remove from visibleCells
+            //if cell is dark, remove from visibleCells --this is currently removing cells that are not dark (simply below 128 brightness FROM THE PLAYER LIGHT ONLY)
             if (lightData[currentDepth][cell][0]+lightData[currentDepth][cell][1]+lightData[currentDepth][cell][2] < 128) {
                 delete visibleCells[cell];
             }
         }
+        this.visibleCells = visibleCells;
         var lighting = new ROT.Lighting()
         lighting.setFOV(this._map.getFOV(currentDepth));
         var lights = this._map.getLights()[currentDepth];
+        console.log(lights)
         for (var x = 0; x < lights.length; x++) {
             lighting.setLight(lights[x].x, lights[x].y, lights[x].color);
         }
