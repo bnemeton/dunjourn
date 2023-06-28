@@ -32,7 +32,7 @@ var buildRow = function (row) {
                 rowSigns.push(newSign);
                 break;
             case "+":
-                rowTiles.push(new DoorTile());
+                rowTiles.push(new GateTile());
                 break;
         }
         //if none of the standard tiles, check enemies for a match

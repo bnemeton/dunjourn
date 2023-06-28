@@ -89,7 +89,7 @@ class SignTile extends Tile {
 class DoorTile extends Tile {
     constructor() {
         super({
-            char: '+',
+            char: '□',
             fg: 'tan',
             isWalkable: false,
             isOpaque: true,
@@ -100,15 +100,41 @@ class DoorTile extends Tile {
     toggle() {
         this.closed = !this.closed;
         if (this.closed) {
-            this.char = '+';
+            this._char = '□';
             this.text = "This is a closed door."
             this.isOpaque = true;
             this.isWalkable = false;
         } else {
-            this.char = '-'; //every other part of toggling works, why not this?
+            this._char = '-'; //every other part of toggling works, why not this?
             // console.log(this.char); //yeah this is fine... so why is it still rendering +?
             this.text = "This is an open door.";
             this.isOpaque = false;
+            this.isWalkable = true;
+        }
+    }
+}
+
+class GateTile extends Tile {
+    constructor() {
+        super({
+            char: '+',
+            fg: 'tan',
+            isWalkable: false,
+            isOpaque: false,
+            text: "This is a closed gate, but you can see through its bars."
+        })
+        this.closed = true;
+    }
+    toggle() {
+        this.closed = !this.closed;
+        if (this.closed) {
+            this._char = '+';
+            this.text = "This is a closed gate, but you can see through its bars."
+            this.isWalkable = false;
+        } else {
+            this._char = '-'; //every other part of toggling works, why not this?
+            // console.log(this.char); //yeah this is fine... so why is it still rendering +?
+            this.text = "This is an open gate.";
             this.isWalkable = true;
         }
     }

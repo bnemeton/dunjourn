@@ -11,6 +11,29 @@
     <div class="textbox">
     <h1>DUNJOURN 0.0.1:</h1>
     <h2>how to make a dungeon:</h2>
+    <p>Dunjourn dungeons are simple .txt files in a particular format that the game reads and uses to generate a roguelike-style dungeon for the player to explore. I'll go through the sections of the .txt format in order!</p>
+    <h3>~map~</h3>
+    <p>The map is the first section of the .txt, and does not require a heading in front of it. Maps are formatted such that each line of text is a row of tiles in the map. For example:</p>
+    <p>########
+        #......# 
+        #......#
+        #......#
+        #......#
+        #......#
+        #......#
+        ########</p>
+        <p>That's an empty 8x8 room. '#' represents a wall, and '.' represents an open tile of floor. At present, Dunjourn also supports these map tiles:
+            <ul>
+                <li>'>' and '<' represent stairs down and stairs up, respectively</li>
+                <li>'□' represents doors, which the player may open by moving into them; when open, they become '-'</li>
+                <li> '+' represent gates, which are like doors but you can see through them</li>
+                <li>'^' represent braziers, which are immobile light sources</li>
+            </ul>
+            I will probably add support for custom map tiles eventually, but for now these are the only ones that work.
+        </p>
+        <p>Any other characters you include in your map section will be interpreted by the game as creatures or items. If it can find the character among the items and creatures you provide in the vault and bestiary sections, it will put them where you have them on the map (on top of a floor tile).</p>
+        <p>For the time being, I can't figure out how to make characters from right-to-left or top-to-bottom scripts work, but any other unicode character should work. Larger ones may get cut off by the edge of the tile, though, or extend into adjacent tiles.</p>
+
     </div>
     <p></p>
 </body>

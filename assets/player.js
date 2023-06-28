@@ -131,8 +131,9 @@ class Player extends Entity {
         //     map.dig(x, y, z);
         //     //console.log('dug terrrain!')
         //     return true;
-        } else if (tile instanceof DoorTile) {
+        } else if (tile instanceof DoorTile || tile instanceof GateTile) {
             tile.toggle();
+            Game.message(`You open it.`);
             return true;
         }
         return false;

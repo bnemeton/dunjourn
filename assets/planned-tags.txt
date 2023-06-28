@@ -1,0 +1,22 @@
+tags i mean to include:
+
+ITEMS:
+-key (has keystring, unlocks lock with matching keystring)
+-equipment (need to invent equipment system, then armor & weapons, etc)
+-light (creates a light at item's location when on, flickers, etc; this.light = light object)
+-
+
+
+CREATURES:
+-vicious (attacks player on sight)
+-wary (attacks player within wary radius)
+-pliant (nonhostile if player's inventory contains a specific item)
+-protector (becomes hostile if player harms a friend creature)
+-guardian (does not wander, becomes hostile if player moves to a certain place)
+
+planned TILES:
+-door (partially implemented; implement locking)  +/-
+-gate (like door, but transparent) +/- (different color)
+-pit (fall to floor below) 🕳
+-traps (close & lock gate, become pit, damage, maybe teleport? )
+-statue 𓁆

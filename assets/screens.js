@@ -590,8 +590,13 @@ class MenuScreen {
         //         return new MenuItem({option})
         //     })
     }
+    reset() {
+        this.text = ""
+        this.label = this.type
+        this.options = []
+    }
     setup(player, args) {
-        console.log(args) //this is even correct! how is item menu not working??
+        console.log(args) 
         this.player = player;
         switch(this.label) {
             case "inventory":
@@ -675,9 +680,13 @@ class MenuScreen {
             }
     }
     render(display) {
-        display.drawText(this.indent, this.top, this.label);
-        display.drawText(this.indent, this.top + 2, this.text);
-        var row = 3;
+        display.drawText(this.indent, this.top-1 , this.label);
+        var row = 1;
+        if (this.text) {
+            display.drawText(this.indent, this.top + row, this.text);
+            row++;
+        }
+        
         for (let i=0; i < this.options.length; i++) {
             let text = "";
             let bg = "black";
@@ -699,7 +708,7 @@ class MenuScreen {
         if (inputType === 'keydown') {
             if (inputData.keyCode === ROT.KEYS.VK_ESCAPE) {
                 //so item menus don't just reload the previous one!!
-                this.label = this.type;
+                this.reset();
                 Game.Screen.playScreen.setSubScreen(null);
                 Game._menuDisplay.clear();
                 //hide menuContainer once more
@@ -1288,11 +1297,11 @@ Game.Screen.playScreen = {
                     this._map.getEngine().unlock();
                     break;
                 case ROT.KEYS.VK_COMMA:
-                    this.move(0, 0, 1);
+                    this.move(0, 0, -1);
                     this._map.getEngine().unlock();
                     break;
                 case ROT.KEYS.VK_PERIOD:
-                    this.move(0, 0, -1);
+                    this.move(0, 0, 1);
                     this._map.getEngine().unlock();
                     break;
                 case ROT.KEYS.VK_I:

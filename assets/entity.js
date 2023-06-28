@@ -87,7 +87,7 @@ class Entity extends Glyph{
         return false;
     }
     removeItem(index) {
-        this.bag[index] = null;
+        this.bag.splice(index, 1);
     }
     hasFreeBagSlot() {
         for (var i = 0; i < this.bagSlots; i++) {
