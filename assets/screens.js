@@ -663,6 +663,7 @@ class MenuScreen {
                             action = () => {
                                 console.log("dropping item") //console logs immediately, when it should,
                                 Game._currentScreen._player.dropItem(index); //only seems to happen when you close the menu? oh bc item menu doesn't close
+                                this.reset();
                                 Game.Screen.playScreen.setSubScreen(null); //works now
                             };
                             break;
