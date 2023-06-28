@@ -8,25 +8,16 @@ class Enemy extends Entity {
         this.armor = properties['armor'] || 0;
         this.damage = properties['damage'] || 1;
         this.luck = properties['luck'] || 1.0;
-        this.bagSlots = properties['bagSlots'] || 5;
+        this.bagSlots = properties['bagSlots'] || 3;
         this.attacker = properties['attacker'] || true;
         // this.corpseRate = properties['corpseRate'] || 0;
         this.foes = properties['foes'] || ['branded'];
         this.wants = properties['wants'] || [];
-        this.friends = properties["friends"] || [];
+        this.friends = properties["friends"] || [this.name];
         this.maxSpeed = properties['maxSpeed'] || 1;
         this.tags = properties['tags'] || [];
         this.loot = properties['loot'] || {
-            drops: [
-                {
-                    name: "bit of string",
-                    chance: 75
-                },
-                {
-                    name: "bit of wire",
-                    chance: 10
-                }
-            ]
+            drops: []
         };
         
     }

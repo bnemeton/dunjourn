@@ -44,7 +44,6 @@ loadDungeon = function(dungeonString) {
     let cleanSigns = [];
     floorSigns.forEach(function(floor) {
         console.log(floor)
-        let thisFloor = [];
         let signs = floor.trim().split("\r\n");
         console.log(signs);
         cleanSigns.push(signs);
@@ -83,7 +82,7 @@ loadDungeon = function(dungeonString) {
             if (i === 0) {
                 //clean the name of the ": "
                 trimmedMonster[i] = trimmedMonster[i].split(":")[0];
-                console.log(trimmedMonster[i]);
+                // console.log(trimmedMonster[i]);
                 cleanBestiary[trimmedMonster[i]] = {
                     name: trimmedMonster[i],
                 };
