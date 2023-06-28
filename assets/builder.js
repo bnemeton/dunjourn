@@ -26,7 +26,7 @@ var buildRow = function (row) {
             case "<":
                 rowTiles.push(new StairUp());
                 break;
-            case "Ħ":
+            case "=":
                 let newSign = new SignTile({});
                 rowTiles.push(newSign);
                 rowSigns.push(newSign);
@@ -36,7 +36,7 @@ var buildRow = function (row) {
                 break;
         }
         //if none of the standard tiles, check enemies for a match
-        if (glyph != "." && glyph != "#" && glyph != ">" && glyph != "<" && glyph != "Ħ") {
+        if (glyph != "." && glyph != "#" && glyph != ">" && glyph != "<" && glyph != "=") {
             // console.log(glyph+` found in map.`) // works fine
             for (var creature in bestiary) {
                 // console.log(enemies[enemy]) //ah for in iterates over the keys, not the values, whoops
@@ -82,7 +82,7 @@ var buildRow = function (row) {
     results.push(rowEnemies);
     results.push(rowSigns);
     results.push(rowItems);
-    console.log(results);
+    // console.log(results);
     return results;
 }
 
@@ -94,7 +94,7 @@ var buildFloor = function (dungeon, depth) {
     var floorEnemies = [];
     // console.log(dungeon.signs[depth]) //looks fine so why is floorSignText undefined?
     var floorSignText = dungeon.signs[depth];
-    // console.log(floorSignText)
+    console.log(floorSignText)
     var floorItems = [];
     var signIndex = 0;
     for (var y = 0; y < dungeon.map[depth].length; y++) {
@@ -106,6 +106,7 @@ var buildFloor = function (dungeon, depth) {
         // add sign text to each sign
         for (var i = 0; i < rowTiles.length; i++) {
             if (rowTiles[i] instanceof SignTile) {
+            // console.log(floorSignText[signIndex])
             rowTiles[i].setText(floorSignText[signIndex]); 
             // console.log(`sign at ${i},${y}: ${floorSignText[signIndex]}`); //this works now
             signIndex++;

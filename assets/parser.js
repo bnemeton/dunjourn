@@ -43,10 +43,11 @@ loadDungeon = function(dungeonString) {
     // signs.splice(0, 1);
     let cleanSigns = [];
     floorSigns.forEach(function(floor) {
+        console.log(floor)
         let thisFloor = [];
         let signs = floor.trim().split("\r\n");
-        thisFloor.push(signs)
-        cleanSigns.push(thisFloor);
+        console.log(signs);
+        cleanSigns.push(signs);
     })
     // console.log(cleanSigns); //whew, works
     Game.Dungeon.signs = cleanSigns;

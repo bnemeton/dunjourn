@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>help/about</title>
+    <title>how to build a dungeon</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,27 +12,58 @@
     <h1>DUNJOURN 0.0.1:</h1>
     <h2>how to make a dungeon:</h2>
     <p>Dunjourn dungeons are simple .txt files in a particular format that the game reads and uses to generate a roguelike-style dungeon for the player to explore. I'll go through the sections of the .txt format in order!</p>
+    <p>For the time being, sections of the .txt <em>must be in order</em>. Down the line I might revise the dungeon parser to accept the sections in any order or make the formatting more flexible, but that's a low priority.</p>
     <h3>~map~</h3>
     <p>The map is the first section of the .txt, and does not require a heading in front of it. Maps are formatted such that each line of text is a row of tiles in the map. For example:</p>
-    <p>########
-        #......# 
-        #......#
-        #......#
-        #......#
-        #......#
-        #......#
+    <p style="margin-left:30px">########<br>
+        #......# <br>
+        #......#<br>
+        #......#<br>
+        #......#<br>
+        #......#<br>
+        #......#<br>
         ########</p>
         <p>That's an empty 8x8 room. '#' represents a wall, and '.' represents an open tile of floor. At present, Dunjourn also supports these map tiles:
             <ul>
-                <li>'>' and '<' represent stairs down and stairs up, respectively</li>
+                <li>'>' and '<' represent stairs down and stairs up, respectively--these don't automatically create stairs on the floor below or above them, so try to line up your stairs if you want them to make sense</li>
                 <li>'□' represents doors, which the player may open by moving into them; when open, they become '-'</li>
                 <li> '+' represent gates, which are like doors but you can see through them</li>
+                <li>'=' represent signs, which have text on them drawn from a list of signs provided by the player</li>
                 <li>'^' represent braziers, which are immobile light sources</li>
+                <li>'X' is the separator for floors of the dungeon, and should be on its own line</li>
             </ul>
-            I will probably add support for custom map tiles eventually, but for now these are the only ones that work.
+            I will probably add support for custom map tiles eventually, but for now these are the only ones that work. Soon, doors and gates will be lockable, requiring specific keys to open.
+        </p>
+        <p>
+            So a tiny two-floor dungeon might look like this:
+            <p style="margin-left:30px">
+                #####<br>
+                #...#<br>
+                #..>#<br>
+                #...#<br>
+                #####<br>
+                X<br>
+                ###################<br>
+                #^....=######.....#<br>
+                #..<.....+........#<br>
+                #......######.....#<br>
+                ###################
+
+            </p>
         </p>
         <p>Any other characters you include in your map section will be interpreted by the game as creatures or items. If it can find the character among the items and creatures you provide in the vault and bestiary sections, it will put them where you have them on the map (on top of a floor tile).</p>
-        <p>For the time being, I can't figure out how to make characters from right-to-left or top-to-bottom scripts work, but any other unicode character should work. Larger ones may get cut off by the edge of the tile, though, or extend into adjacent tiles.</p>
+        <p>For the time being, I can't figure out how to make characters from right-to-left or top-to-bottom scripts work, but any other unicode character should work (yes, emoji included). Larger ones may get cut off by the edge of the tile, though, or extend into adjacent tiles.</p>
+        <h3>~signs~</h3>
+        <p>The signs section is simple: it starts with the word SIGNS on its own line, and then is sign texts grouped into dungeon floors by empty lines:</p>
+        <p style="margin-left:30px">SIGNS<br>
+            This is the first sign on the first floor.<br>
+            This is the second sign on the first floor.<br>
+<br>
+            This is the first sign on the second floor.<br>
+            This is the second sign on the second floor.
+        </p>
+        <p>Sign texts on a given floor are applied left to right, top to bottom. The first floor is the starting floor of the dungeon, and subsequent sections are applied to the floors below. The game currently doesn't support <em>ascending</em> from the starting floor. Well, stairs do, I think, but not signs.</p>
+        <h3>~vault~</h3>
 
     </div>
     <p></p>

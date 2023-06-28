@@ -72,7 +72,7 @@ class StairUp extends Tile {
 class SignTile extends Tile {
     constructor(properties) {
         super({
-            char: 'Ħ',
+            char: '=',
             fg: 'tan',
             isWalkable: false,
             text: "There is a sign here. "
