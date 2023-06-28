@@ -15,7 +15,7 @@ class Enemy extends Entity {
         this.wants = properties['wants'] || [];
         this.friends = properties["friends"] || [];
         this.maxSpeed = properties['maxSpeed'] || 1;
-        this.mood = properties['mood'] || "angry";
+        this.tags = properties['tags'] || [];
         this.loot = properties['loot'] || {
             drops: [
                 {
@@ -42,11 +42,15 @@ class Enemy extends Entity {
        }
    }
     act() {
-        //TODO implement a mood or behavior system
-        switch(this.mood) {
-            case "angry":
-                this.wander();
-                break;          
+        if (this.tags.includes("vicious") && this.lookout("foes", this.sight)) {
+            let closestFoe = this.getClosest(this.lookout("foes", this.sight))
+            console.log(this.getDistance(closestFoe)) //always at least 2? even when adjacent?
+            if (this.getDistance(closestFoe) <= 2) {
+                console.log(this.name + " attacks " + closestFoe.name)
+                this.attack(closestFoe);
+            } else {
+                this.seek(closestFoe);
+            }
         }
     }
     canSee(entity) {
@@ -140,7 +144,7 @@ class Enemy extends Entity {
         });
     }
     attack(target) {
-        //console.log(`enemy attacking/targeting ${target.name}`)
+        console.log(`enemy attacking/targeting ${target.name}`)
         //only do this if the target is mortal
         if(target.mortal) {
             let damage = this.damage;
@@ -265,13 +269,13 @@ class Enemy extends Entity {
         }
 
     }
-    tryDropCorpse() {
-        if (Math.round(Math.random() * 100) < this.corpseRate) {
-            // Create a new corpse item and drop it.
-            this._map.addItem(this.getX(), this.getY(), this.getZ(), (new Corpse({
-                name: this.name
-            })));
-        }
-    }
+    // tryDropCorpse() {
+    //     if (Math.round(Math.random() * 100) < this.corpseRate) {
+    //         // Create a new corpse item and drop it.
+    //         this._map.addItem(this.getX(), this.getY(), this.getZ(), (new Corpse({
+    //             name: this.name
+    //         })));
+    //     }
+    // }
 }
 
