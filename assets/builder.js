@@ -1,6 +1,6 @@
 
 var buildRow = function (row) {
-    // console.log(row); //looks fine
+    console.log(row); //splitting this isn't a function?
     //iterate through the  and create a FloorTile when the tile is a . or a WallTile when the tile is a # or a StairDown when the tile is a > or a StairUp when the tile is a <
     let results = [];
     let rowEnemies = [];
@@ -57,20 +57,23 @@ var buildRow = function (row) {
                 }
             }
             //check items for a match
-            for (var item in vault) {
-                let thisItem = vault[item];
+            for (var item in Game.Dungeon.vault) {
+                let thisItem = Game.Dungeon.vault[item];
                 if (thisItem.char == glyph) {
                     // console.log(`found an ${enemy.name}`); //never firing....
                     //create enemy and set position
                     // let newItem = new Item(thisItem);
                     // push floortile and add enemy to enemy array
                     rowTiles.push(new FloorTile());
-                    rowItems.push(
-                        {
-                        type: `${item}`,
-                        x: x
-                        }
-                    );
+                    let resultItem = {};
+                    resultItem.type = `${item}`;
+                    resultItem.x = x;
+                    //if item tags include key, add keystring to the pushed object
+                    console.log(thisItem)
+                    if (thisItem.tags.includes("key")) {
+                        resultItem.key = true;
+                    }
+                    rowItems.push(resultItem);
                     // console.log(`added ${newEnemy.name} to enemy array with position `); 
                 }
             }
@@ -163,6 +166,42 @@ class Builder {
             for (var i = 0; i < floor[2].length; i++) {
                 floor[2][i].z = z;
                 this._items.push(floor[2][i]);
+            }
+            //for each door or gate, check if Game.Dungeon.keys contains a key with matching coordinates, then set lockstring
+            for (var i = 0; i < this._tiles[z].length; i++) {
+                for (var j = 0; j < this._tiles[z][i].length; j++) {
+                    if (this._tiles[z][i][j] instanceof DoorTile || this._tiles[z][i][j] instanceof GateTile) {
+                        // console.log(`found a door or gate at ${i},${j},${z}`);
+                        // console.log(this._tiles[z][i][j]);
+                        let thisTile = this._tiles[z][i][j];
+                        // console.log(thisTile);
+                        // console.log(this._items);
+                        for (key in Game.Dungeon.keys) {
+                            let thisKey = Game.Dungeon.keys[key];
+                            // console.log(thisKey);
+                            if (thisKey.x == i && thisKey.y == j && thisKey.z == z) {
+                                // console.log(`found a key at ${i},${j},${z}`);
+                                // console.log(thisKey);
+                                // console.log(thisTile);
+                                thisTile.lockstring(thisKey.keystring);
+                                thisTile.locked = true;
+                            }
+                        }
+                    }
+                }
+            }
+            //for each key, check if Game.Dungeon.keys contains an item with matching coordinates, then set keystring
+            for (var i = 0; i < this._items.length; i++) {
+                let thisItem = this._items[i];
+                if (thisItem.key) {
+                    //check Game.Dungeon.keys for matching coords
+                    for (key in Game.Dungeon.keys) {
+                        let thisKey = Game.Dungeon.keys[key];
+                        if (thisKey.x == thisItem.x && thisKey.y == thisItem.y && thisKey.z == thisItem.z) {
+                            thisItem.keystring = thisKey.keystring;
+                        }
+                    }
+                }
             }
         }
         // console.log(this._tiles); //why is this undefined?

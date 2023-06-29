@@ -55,18 +55,19 @@ Game.Screen.startScreen = {
     ]},
     exit: function() {console.log('exited start screen.')},
     render: function(displays) {
-        displays.main.drawText(16, 6, foreColor + "DUNJOURN 0.0.1");
+        displays.main.drawText(16, 6, foreColor + "DUNJOURN 0.1");
         displays.main.drawText(16, 8, ashColor + `
-        load a dungeon with picker below, then:
+        load a dungeon with file <a href="https://rot13.com/">picker below, then:
         press [enter] to start"`);
         displays.main.drawText(16, 12, ashColor + `
-                                            there's no real game here yet! still working on initial setup.
-
+                                            there's no real game here yet! still working on basic features.
 
                                             go to /about.html for what the hell is going on,
                                             & a reference of commands!
 
                                             go to /outline.html for notes on development
+
+                                            go to /howto.html for how to build your own dungeon!
                                             `)
         updateMessages();
     },
@@ -822,9 +823,10 @@ Game.Screen.playScreen = {
         // var depth = 1;
         //retrieve the tiles from the level object
         // console.log(level); //this works fine, level is available
-        let dungeonArray = splitLevel(Game.Dungeon.map);
+        let splitDungeon = splitLevel(Game.Dungeon.map);
         // console.log(dungeonArray); //this works fine
-        Game.Dungeon.map = dungeonArray;
+        Game.Dungeon.map = splitDungeon[0];
+        Game.Dungeon.keys = splitDungeon[1];
         // console.log(blankLevel) //works fine
         // console.log(levelArray); //fixed
 

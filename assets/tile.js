@@ -87,7 +87,7 @@ class SignTile extends Tile {
 }
 
 class DoorTile extends Tile {
-    constructor() {
+    constructor(props) {
         super({
             char: '□',
             fg: 'tan',
@@ -96,6 +96,8 @@ class DoorTile extends Tile {
             text: "This is a closed door."
         })
         this.closed = true;
+        this.locked = props('locked') || false;
+        this.lockstring = props('lockstring') || '';
     }
     toggle() {
         this.closed = !this.closed;
@@ -124,6 +126,8 @@ class GateTile extends Tile {
             text: "This is a closed gate, but you can see through its bars."
         })
         this.closed = true;
+        this.locked = props('locked') || false;
+        this.lockstring = props('lockstring') || '';
     }
     toggle() {
         this.closed = !this.closed;

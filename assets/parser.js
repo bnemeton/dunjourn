@@ -1,14 +1,26 @@
+
+//rot13 provided string to decrypt it
+function rot13(message) {
+    return message.replace(/[a-z]/gi, letter => String.fromCharCode(letter.charCodeAt(0) + (letter.toLowerCase() <= 'm' ? 13 : -13)));
+}
+
 //parse dungeon string uploaded by user
 function parseDungeon(input) {
     let file = input.files[0];
     let reader = new FileReader();
+    
     reader.readAsText(file);
     reader.onload = function() {
         // console.log(reader.result); //works!
+        if (file.name.startsWith('rot13')) {
+        let rottenString = rot13(reader.result);
+        loadDungeon(rottenString);
+        } else {
         loadDungeon(reader.result);
-    }
-    reader.onerror = function() {
-        console.log(reader.error);
+        }
+        reader.onerror = function() {
+            console.log(reader.error);
+        }
     }
 }
 
