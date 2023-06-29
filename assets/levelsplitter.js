@@ -22,10 +22,13 @@ var splitLevel = function (dungeon) {
             let splitRow = [];
             for (var k = 0; k < row.length; k++) {
                 if (row[k] == "(") {
-                    let keystring = row.slice(k, row.indexOf(')'))[1];
+                    //let keystring be the string between the parentheses
+                    let keystring = row.slice(k + 1, row.indexOf(')'));
+                    // let keystring = row.slice(k, row.indexOf('/)'))[1];
+                    console.log(keystring);
                     dungeonKeys.push({
                         keystring: keystring,
-                        x: k,
+                        x: k-1,
                         y: j,
                         z: i
                     });
@@ -38,5 +41,5 @@ var splitLevel = function (dungeon) {
         dungeonArray.push(levelArray);
     };
     // console.log(dungeonArray)// this is fine/doesn't show the mirroring/rotation of the built level
-    return dungeonArray, dungeonKeys;
+    return {map: dungeonArray, keys: dungeonKeys};
 }

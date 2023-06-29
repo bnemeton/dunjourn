@@ -1,6 +1,6 @@
 
 var buildRow = function (row) {
-    console.log(row); //splitting this isn't a function?
+    // console.log(row); //works fine now
     //iterate through the  and create a FloorTile when the tile is a . or a WallTile when the tile is a # or a StairDown when the tile is a > or a StairUp when the tile is a <
     let results = [];
     let rowEnemies = [];
@@ -32,7 +32,7 @@ var buildRow = function (row) {
                 rowSigns.push(newSign);
                 break;
             case "+":
-                rowTiles.push(new GateTile());
+                rowTiles.push(new GateTile({}));
                 break;
         }
         //if none of the standard tiles, check enemies for a match
@@ -69,9 +69,10 @@ var buildRow = function (row) {
                     resultItem.type = `${item}`;
                     resultItem.x = x;
                     //if item tags include key, add keystring to the pushed object
-                    console.log(thisItem)
+                    // console.log(thisItem)
                     if (thisItem.tags.includes("key")) {
                         resultItem.key = true;
+                        resultItem.x += 1;
                     }
                     rowItems.push(resultItem);
                     // console.log(`added ${newEnemy.name} to enemy array with position `); 
@@ -97,7 +98,7 @@ var buildFloor = function (dungeon, depth) {
     var floorEnemies = [];
     // console.log(dungeon.signs[depth]) //looks fine so why is floorSignText undefined?
     var floorSignText = dungeon.signs[depth];
-    console.log(floorSignText)
+    // console.log(floorSignText)
     var floorItems = [];
     var signIndex = 0;
     for (var y = 0; y < dungeon.map[depth].length; y++) {
@@ -139,6 +140,7 @@ var buildFloor = function (dungeon, depth) {
 
 class Builder {
     constructor(dungeon) {
+        // console.log(dungeon);
         // console.log(dungeon.map);
         this._width = dungeon.map[0][0].length;
         this._height = dungeon.map[0].length;
@@ -174,17 +176,18 @@ class Builder {
                         // console.log(`found a door or gate at ${i},${j},${z}`);
                         // console.log(this._tiles[z][i][j]);
                         let thisTile = this._tiles[z][i][j];
-                        // console.log(thisTile);
+                        console.log(thisTile);
                         // console.log(this._items);
-                        for (key in Game.Dungeon.keys) {
+                        for (var key in Game.Dungeon.keys) {
                             let thisKey = Game.Dungeon.keys[key];
-                            // console.log(thisKey);
-                            if (thisKey.x == i && thisKey.y == j && thisKey.z == z) {
-                                // console.log(`found a key at ${i},${j},${z}`);
-                                // console.log(thisKey);
-                                // console.log(thisTile);
-                                thisTile.lockstring(thisKey.keystring);
+                            // console.log(thisKey) //keys are here
+                            if (thisKey.x == j && thisKey.y == i && thisKey.z == z) {
+                                console.log('Found a matching key for a door or gate.')
+                                console.log(thisKey);
+
+                                thisTile.lockstring = thisKey.keystring;
                                 thisTile.locked = true;
+                                console.log(thisTile);
                             }
                         }
                     }
@@ -194,10 +197,15 @@ class Builder {
             for (var i = 0; i < this._items.length; i++) {
                 let thisItem = this._items[i];
                 if (thisItem.key) {
+                    // console.log('Found a key, looking for matching keystring in Game.Dungeon.keys...')
+                    // console.log(`key:`)
+                    // console.log(thisItem);
                     //check Game.Dungeon.keys for matching coords
                     for (key in Game.Dungeon.keys) {
                         let thisKey = Game.Dungeon.keys[key];
+                        // console.log(thisKey)
                         if (thisKey.x == thisItem.x && thisKey.y == thisItem.y && thisKey.z == thisItem.z) {
+                            // console.log('...found the matching keystring!')
                             thisItem.keystring = thisKey.keystring;
                         }
                     }

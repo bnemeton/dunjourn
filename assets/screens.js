@@ -825,8 +825,8 @@ Game.Screen.playScreen = {
         // console.log(level); //this works fine, level is available
         let splitDungeon = splitLevel(Game.Dungeon.map);
         // console.log(dungeonArray); //this works fine
-        Game.Dungeon.map = splitDungeon[0];
-        Game.Dungeon.keys = splitDungeon[1];
+        Game.Dungeon.map = splitDungeon.map;
+        Game.Dungeon.keys = splitDungeon.keys;
         // console.log(blankLevel) //works fine
         // console.log(levelArray); //fixed
 
@@ -873,6 +873,11 @@ Game.Screen.playScreen = {
                 var newItem = new Container(Game.Dungeon.vault[item.type], contents);
             } else {
                 var newItem = new Item(Game.Dungeon.vault[item.type]);
+            }
+
+            //if item.key, set keystring to item.keystring
+            if (item.key) {
+                newItem.keystring = item.keystring;
             }
         
             //set item position
@@ -961,7 +966,7 @@ Game.Screen.playScreen = {
         var lighting = new ROT.Lighting()
         lighting.setFOV(this._map.getFOV(currentDepth));
         var lights = this._map.getLights()[currentDepth];
-        console.log(lights)
+        // console.log(lights)
         for (var x = 0; x < lights.length; x++) {
             lighting.setLight(lights[x].x, lights[x].y, lights[x].color);
         }
@@ -1155,6 +1160,9 @@ Game.Screen.playScreen = {
                         y: actualY
                     };
                     text = tile.text;
+                    if (tile.locked) {
+                        text += ` It's locked.`
+                    }
                    
                     let entity = this._map.getEntityAt(actualX,actualY,currentDepth)
                     
@@ -1188,6 +1196,9 @@ Game.Screen.playScreen = {
                     if (items.length > 0) {
                         if (items.length === 1) {
                             text += ` There is also a(n) ${items[0].name} here.`
+                            if (items[0].name === 'rusty key') {
+                                text += ` The keystring is ${items[0].keystring}.`
+                            }
                         } else {
                             text += ` There are also some items here.`
                         }

@@ -16,9 +16,7 @@ class Enemy extends Entity {
         this.friends = properties["friends"] || [this.name];
         this.maxSpeed = properties['maxSpeed'] || 1;
         this.tags = properties['tags'] || [];
-        this.loot = properties['loot'] || {
-            drops: []
-        };
+        this.loot = properties['loot'] || {};
         
     }
     wander() {

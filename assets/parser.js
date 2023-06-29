@@ -55,9 +55,9 @@ loadDungeon = function(dungeonString) {
     // signs.splice(0, 1);
     let cleanSigns = [];
     floorSigns.forEach(function(floor) {
-        console.log(floor)
+        // console.log(floor)
         let signs = floor.trim().split("\r\n");
-        console.log(signs);
+        // console.log(signs);
         cleanSigns.push(signs);
     })
     // console.log(cleanSigns); //whew, works
