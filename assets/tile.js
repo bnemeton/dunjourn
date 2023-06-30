@@ -144,6 +144,33 @@ class GateTile extends Tile {
     }
 }
 
+class BrazierTile extends Tile {
+    constructor(props) {
+        super({
+            char: '^',
+            fg: 'orange',
+            isWalkable: false,
+            isOpaque: false,
+            text: "This is a brazier. It blazes brightly."
+        })
+        this.lit = true;
+        this.light = props['light']
+    }
+    toggle() {
+        this.lit = !this.lit;
+        if (this.lit) {
+            this._char = '^';
+            this.text = "This is a brazier. It blazes brightly."
+            this.isWalkable = false;
+        } else {
+            this._char = '^';
+            this.fg = 'slategrey';
+            this.text = "This is a brazier. It is dark."
+            this.isWalkable = true;
+        }
+    }
+}
+
 // //getters
 
 // Game.Tile.prototype.isWalkable = function() {

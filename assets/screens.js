@@ -836,6 +836,11 @@ Game.Screen.playScreen = {
         // console.log(dungeon.getTiles())
         this._map = new Map(dungeon.getTiles(), this._player);
         this._map.getEngine().start();
+        //add dungeon lights to map
+        dungeon._lights.forEach(light => {
+            this._map.includeLight(light, light.z);
+        })
+
         // add enemies from dungeon enemies
         // console.log(dungeon._enemies); //this is fine
         dungeon._enemies.forEach(enemy => {

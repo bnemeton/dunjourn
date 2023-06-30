@@ -34,6 +34,14 @@ var buildRow = function (row) {
             case "+":
                 rowTiles.push(new GateTile({}));
                 break;
+            case "^":
+                rowTiles.push(new BrazierTile({
+                    light: new Light({
+                        color: [255, 150, 0],
+                        states: [[255, 150, 0], [255, 100, 0], [255, 200, 0], [200, 150, 0], [150, 50, 0], [255, 175, 0]],
+                        x: x
+                    })
+                }))
         }
         //if none of the standard tiles, check enemies for a match
         if (glyph != "." && glyph != "#" && glyph != ">" && glyph != "<" && glyph != "=") {
@@ -127,6 +135,12 @@ var buildFloor = function (dungeon, depth) {
             rowEnemies[i].y = y;
             floorEnemies.push(rowEnemies[i]);
         }
+        //add y position to each light associated with a brazier in the row
+        for (var i = 0; i < rowTiles.length; i++) {
+            if (rowTiles[i] instanceof BrazierTile) {
+                rowTiles[i].light.y = y;
+            }
+        }
 
     }
 
@@ -148,6 +162,7 @@ class Builder {
         this._tiles = [];
         this._enemies = [];
         this._items = [];
+        this._lights = [];
         // this.signText = dungeon.signs
 
         //console log the enemies object for me right quick
@@ -168,6 +183,15 @@ class Builder {
             for (var i = 0; i < floor[2].length; i++) {
                 floor[2][i].z = z;
                 this._items.push(floor[2][i]);
+            }
+            //set brazier lights z position to this floor
+            for (var i = 0; i < floor[0].length; i++) {
+                for (var j = 0; j < floor[0][i].length; j++) {
+                    if (floor[0][i][j] instanceof BrazierTile) {
+                        floor[0][i][j].light.z = z;
+                        this._lights.push(floor[0][i][j].light);
+                    }
+                }
             }
             //for each door or gate, check if Game.Dungeon.keys contains a key with matching coordinates, then set lockstring
             for (var i = 0; i < this._tiles[z].length; i++) {

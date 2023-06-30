@@ -182,7 +182,10 @@ class Map {
         let light = new Light({x: x, y: y, z: z, color: color});
         this._lights.push(light);
 
-    }
+    };
+    includeLight(light, z) {
+        this._lights[z].push(light);
+    };
     setupExploredArray() {
         for (var z = 0; z < this._depth; z++) {
             this._explored[z] = new Array(this._height);
