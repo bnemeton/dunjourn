@@ -1034,7 +1034,14 @@ Game.Screen.playScreen = {
                         let lightData = this._map.getLightData();
                         // console.log(lightData) //always empty objects, so no light data getting set
                         let lightColor = lightData[currentDepth][x + ',' + y];
-                        let lighterColor = ROT.Color.add(lightColor, [45, 45, 45]);
+                        let lightSum = lightColor[0]+lightColor[1]+lightColor[2];
+                        let lightDiff = 256 - lightSum;
+                        if (lightDiff < 0) {
+                            lightDiff = 0;
+                        }
+                        let lighterColor = ROT.Color.add(lightColor, [lightDiff/3, lightDiff/3, lightDiff/3]);
+
+                       
 
                             // console.log(`lightData at ${x},${y}:` + lightColor) //undefined, bc there's no lightdata for this tile presumably?
                         // console.log(`here's the lightColor for this tile: ${lightColor}`)

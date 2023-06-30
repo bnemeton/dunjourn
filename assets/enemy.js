@@ -235,9 +235,9 @@ class Enemy extends Entity {
     dropLoot() {
         let dropNames = [];
         // for each item in this.loot.drops, add if roll below drop chance
-        for (let i = 0; i < this.loot.drops.length; i++) {
-            if (Math.round(Math.random() * 100) < this.loot.drops[i].chance) {
-                dropNames.push(this.loot.drops[i].name);
+        for (let i = 0; i < this.loot.length; i++) {
+            if (Math.round(Math.random() * 100) < this.loot[i].chance) {
+                dropNames.push(this.loot[i].name);
             }
         }
         // for each item in dropNames, create item and drop

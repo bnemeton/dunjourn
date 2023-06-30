@@ -31,20 +31,23 @@ loadDungeon = function(dungeonString) {
 
     Sundering the heavens from the primordial waters...`)
     updateMessages();
-    let signSplit = dungeonString.split("SIGNS");
+    let titleSplit = dungeonString.split("MAP");
+    let signSplit = titleSplit[1].split("SIGNS");
     let containerSplit = signSplit[1].split("CONTAINERS");
     let bestiarySplit = containerSplit[1].split("BESTIARY");
     let vaultSplit = bestiarySplit[1].split("VAULT");
     let splitDungeonStrings = {
+        title: titleSplit[0],
         map: signSplit[0],
         signs: containerSplit[0],
         containers: bestiarySplit[0],
         bestiary: vaultSplit[0],
         vault: vaultSplit[1]
     }
-    Game.message(`
+    Game.message(`Creating ${splitDungeonStrings.title}!)
     
     Parting primordial waters and raising up the land...`)
+    Game.Dungeon.title = splitDungeonStrings.title.trim();
     updateMessages();    
     // console.log(splitDungeonStrings); //works fine!
     Game.Dungeon.map = splitDungeonStrings.map.trim();
@@ -165,5 +168,8 @@ loadDungeon = function(dungeonString) {
 
     Filling the caverns with treasures...`)
     updateMessages();
+    //get filepicker element and set it to "now playing:" and the dungeon title
+    let filePicker = document.getElementById("filepicker");
+    filePicker.innerHTML = `now playing: ${Game.Dungeon.title}`;
     // console.log(Game.Dungeon); //looks fine, not sure what's wrong with the builder
 }
