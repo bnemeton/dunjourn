@@ -148,16 +148,28 @@ class Player extends Entity {
                 }
                 //if no key matches, door remains locked
                 Game.message(`It's locked. There must be a key somewhere...`);
+                return false;
 
-            } else {
+            }  else {
                 tile.toggle();
                 Game.message(`You open it.`);
                 return true;    
             }
-
-            
+        } else if (tile instanceof BrazierTile) {
+                tile.toggle();
+                switch (tile.lit) {
+                    case true:
+                        Game.message(`You light the brazier.`);
+                        break;
+                    case false:
+                        Game.message(`You extinguish the brazier.`);
+                        break;
+                }
+                return true;
+        } else {
+            return false;
         }
-        return false;
+        
     }
     act() {
         // Detect if the game is over

@@ -160,13 +160,16 @@ class BrazierTile extends Tile {
         this.lit = !this.lit;
         if (this.lit) {
             this._char = '^';
+            this.fg = 'orange';
             this.text = "This is a brazier. It blazes brightly."
-            this.isWalkable = false;
+            // this.isWalkable = false;
+            this.light.show();
         } else {
             this._char = '^';
             this.fg = 'slategrey';
             this.text = "This is a brazier. It is dark."
-            this.isWalkable = true;
+            // this.isWalkable = false;
+            this.light.hide();
         }
     }
 }
