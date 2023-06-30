@@ -55,18 +55,19 @@ Game.Screen.startScreen = {
     ]},
     exit: function() {console.log('exited start screen.')},
     render: function(displays) {
-        displays.main.drawText(16, 6, foreColor + "DUNJOURN 0.0.1");
+        displays.main.drawText(16, 6, foreColor + "DUNJOURN 0.1");
         displays.main.drawText(16, 8, ashColor + `
-        load a dungeon with picker below, then:
+        load a dungeon with file <a href="https://rot13.com/">picker below, then:
         press [enter] to start"`);
         displays.main.drawText(16, 12, ashColor + `
-                                            there's no real game here yet! still working on initial setup.
-
+                                            there's no real game here yet! still working on basic features.
 
                                             go to /about.html for what the hell is going on,
                                             & a reference of commands!
 
                                             go to /outline.html for notes on development
+
+                                            go to /howto.html for how to build your own dungeon!
                                             `)
         updateMessages();
     },
@@ -822,9 +823,10 @@ Game.Screen.playScreen = {
         // var depth = 1;
         //retrieve the tiles from the level object
         // console.log(level); //this works fine, level is available
-        let dungeonArray = splitLevel(Game.Dungeon.map);
+        let splitDungeon = splitLevel(Game.Dungeon.map);
         // console.log(dungeonArray); //this works fine
-        Game.Dungeon.map = dungeonArray;
+        Game.Dungeon.map = splitDungeon.map;
+        Game.Dungeon.keys = splitDungeon.keys;
         // console.log(blankLevel) //works fine
         // console.log(levelArray); //fixed
 
@@ -834,6 +836,11 @@ Game.Screen.playScreen = {
         // console.log(dungeon.getTiles())
         this._map = new Map(dungeon.getTiles(), this._player);
         this._map.getEngine().start();
+        //add dungeon lights to map
+        dungeon._lights.forEach(light => {
+            this._map.includeLight(light, light.z);
+        })
+
         // add enemies from dungeon enemies
         // console.log(dungeon._enemies); //this is fine
         dungeon._enemies.forEach(enemy => {
@@ -871,6 +878,11 @@ Game.Screen.playScreen = {
                 var newItem = new Container(Game.Dungeon.vault[item.type], contents);
             } else {
                 var newItem = new Item(Game.Dungeon.vault[item.type]);
+            }
+
+            //if item.key, set keystring to item.keystring
+            if (item.key) {
+                newItem.keystring = item.keystring;
             }
         
             //set item position
@@ -959,7 +971,7 @@ Game.Screen.playScreen = {
         var lighting = new ROT.Lighting()
         lighting.setFOV(this._map.getFOV(currentDepth));
         var lights = this._map.getLights()[currentDepth];
-        console.log(lights)
+        // console.log(lights)
         for (var x = 0; x < lights.length; x++) {
             lighting.setLight(lights[x].x, lights[x].y, lights[x].color);
         }
@@ -1027,7 +1039,14 @@ Game.Screen.playScreen = {
                         let lightData = this._map.getLightData();
                         // console.log(lightData) //always empty objects, so no light data getting set
                         let lightColor = lightData[currentDepth][x + ',' + y];
-                        let lighterColor = ROT.Color.add(lightColor, [45, 45, 45]);
+                        let lightSum = lightColor[0]+lightColor[1]+lightColor[2];
+                        let lightDiff = 256 - lightSum;
+                        if (lightDiff < 0) {
+                            lightDiff = 0;
+                        }
+                        let lighterColor = ROT.Color.add(lightColor, [lightDiff/3, lightDiff/3, lightDiff/3]);
+
+                       
 
                             // console.log(`lightData at ${x},${y}:` + lightColor) //undefined, bc there's no lightdata for this tile presumably?
                         // console.log(`here's the lightColor for this tile: ${lightColor}`)
@@ -1153,6 +1172,9 @@ Game.Screen.playScreen = {
                         y: actualY
                     };
                     text = tile.text;
+                    if (tile.locked) {
+                        text += ` It's locked.`
+                    }
                    
                     let entity = this._map.getEntityAt(actualX,actualY,currentDepth)
                     
@@ -1186,6 +1208,9 @@ Game.Screen.playScreen = {
                     if (items.length > 0) {
                         if (items.length === 1) {
                             text += ` There is also a(n) ${items[0].name} here.`
+                            if (items[0].name === 'rusty key') {
+                                text += ` The keystring is ${items[0].keystring}.`
+                            }
                         } else {
                             text += ` There are also some items here.`
                         }

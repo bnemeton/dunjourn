@@ -21,7 +21,10 @@ var vault = {
             'retrieve',
             'drop'
         ],
-        container: true
+        tags: [
+            'container'
+        ],
+
     },
     loaf: {
         name: 'loaf',
@@ -62,6 +65,19 @@ var vault = {
         ],
         tags: [
             "food"
+        ]
+    },
+    "rusty key": {
+        name: "rusty key",
+        text: "Rusty key. It's not clear what it unlocks.",
+        char: ':',
+        fg: 'lightcoral',
+        bg: 'black',
+        options: [
+            "drop"
+        ],
+        tags: [
+            "key"
         ]
     }
 

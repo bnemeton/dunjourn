@@ -1,6 +1,6 @@
 
 var buildRow = function (row) {
-    // console.log(row); //looks fine
+    // console.log(row); //works fine now
     //iterate through the  and create a FloorTile when the tile is a . or a WallTile when the tile is a # or a StairDown when the tile is a > or a StairUp when the tile is a <
     let results = [];
     let rowEnemies = [];
@@ -32,8 +32,16 @@ var buildRow = function (row) {
                 rowSigns.push(newSign);
                 break;
             case "+":
-                rowTiles.push(new GateTile());
+                rowTiles.push(new GateTile({}));
                 break;
+            case "^":
+                rowTiles.push(new BrazierTile({
+                    light: new Light({
+                        color: [255, 150, 0],
+                        states: [[255, 150, 0], [255, 100, 0], [255, 200, 0], [200, 150, 0], [150, 50, 0], [255, 175, 0]],
+                        x: x
+                    })
+                }))
         }
         //if none of the standard tiles, check enemies for a match
         if (glyph != "." && glyph != "#" && glyph != ">" && glyph != "<" && glyph != "=") {
@@ -57,20 +65,24 @@ var buildRow = function (row) {
                 }
             }
             //check items for a match
-            for (var item in vault) {
-                let thisItem = vault[item];
+            for (var item in Game.Dungeon.vault) {
+                let thisItem = Game.Dungeon.vault[item];
                 if (thisItem.char == glyph) {
                     // console.log(`found an ${enemy.name}`); //never firing....
                     //create enemy and set position
                     // let newItem = new Item(thisItem);
                     // push floortile and add enemy to enemy array
                     rowTiles.push(new FloorTile());
-                    rowItems.push(
-                        {
-                        type: `${item}`,
-                        x: x
-                        }
-                    );
+                    let resultItem = {};
+                    resultItem.type = `${item}`;
+                    resultItem.x = x;
+                    //if item tags include key, add keystring to the pushed object
+                    // console.log(thisItem)
+                    if (thisItem.tags.includes("key")) {
+                        resultItem.key = true;
+                        // resultItem.x += 1;
+                    }
+                    rowItems.push(resultItem);
                     // console.log(`added ${newEnemy.name} to enemy array with position `); 
                 }
             }
@@ -94,7 +106,7 @@ var buildFloor = function (dungeon, depth) {
     var floorEnemies = [];
     // console.log(dungeon.signs[depth]) //looks fine so why is floorSignText undefined?
     var floorSignText = dungeon.signs[depth];
-    console.log(floorSignText)
+    // console.log(floorSignText)
     var floorItems = [];
     var signIndex = 0;
     for (var y = 0; y < dungeon.map[depth].length; y++) {
@@ -123,6 +135,12 @@ var buildFloor = function (dungeon, depth) {
             rowEnemies[i].y = y;
             floorEnemies.push(rowEnemies[i]);
         }
+        //add y position to each light associated with a brazier in the row
+        for (var i = 0; i < rowTiles.length; i++) {
+            if (rowTiles[i] instanceof BrazierTile) {
+                rowTiles[i].light.y = y;
+            }
+        }
 
     }
 
@@ -136,6 +154,7 @@ var buildFloor = function (dungeon, depth) {
 
 class Builder {
     constructor(dungeon) {
+        // console.log(dungeon);
         // console.log(dungeon.map);
         this._width = dungeon.map[0][0].length;
         this._height = dungeon.map[0].length;
@@ -143,6 +162,7 @@ class Builder {
         this._tiles = [];
         this._enemies = [];
         this._items = [];
+        this._lights = [];
         // this.signText = dungeon.signs
 
         //console log the enemies object for me right quick
@@ -163,6 +183,57 @@ class Builder {
             for (var i = 0; i < floor[2].length; i++) {
                 floor[2][i].z = z;
                 this._items.push(floor[2][i]);
+            }
+            //set brazier lights z position to this floor
+            for (var i = 0; i < floor[0].length; i++) {
+                for (var j = 0; j < floor[0][i].length; j++) {
+                    if (floor[0][i][j] instanceof BrazierTile) {
+                        floor[0][i][j].light.z = z;
+                        this._lights.push(floor[0][i][j].light);
+                    }
+                }
+            }
+            //for each door or gate, check if Game.Dungeon.keys contains a key with matching coordinates, then set lockstring
+            for (var i = 0; i < this._tiles[z].length; i++) {
+                for (var j = 0; j < this._tiles[z][i].length; j++) {
+                    if (this._tiles[z][i][j] instanceof DoorTile || this._tiles[z][i][j] instanceof GateTile) {
+                        // console.log(`found a door or gate at ${i},${j},${z}`);
+                        // console.log(this._tiles[z][i][j]);
+                        let thisTile = this._tiles[z][i][j];
+                        console.log(thisTile);
+                        // console.log(this._items);
+                        for (var key in Game.Dungeon.keys) {
+                            let thisKey = Game.Dungeon.keys[key];
+                            // console.log(thisKey) //keys are here
+                            if (thisKey.x == j && thisKey.y == i && thisKey.z == z) {
+                                console.log('Found a matching keystring for a door or gate.')
+                                // console.log(thisKey);
+
+                                thisTile.lockstring = thisKey.keystring;
+                                thisTile.locked = true;
+                                // console.log(thisTile);
+                            }
+                        }
+                    }
+                }
+            }
+            //for each key, check if Game.Dungeon.keys contains an item with matching coordinates, then set keystring
+            for (var i = 0; i < this._items.length; i++) {
+                let thisItem = this._items[i];
+                if (thisItem.key) {
+                    // console.log('Found a key, looking for matching keystring in Game.Dungeon.keys...')
+                    // console.log(`key:`)
+                    // console.log(thisItem);
+                    //check Game.Dungeon.keys for matching coords
+                    for (key in Game.Dungeon.keys) {
+                        let thisKey = Game.Dungeon.keys[key];
+                        // console.log(thisKey)
+                        if (thisKey.x == thisItem.x && thisKey.y == thisItem.y && thisKey.z == thisItem.z) {
+                            // console.log('...found the matching keystring!')
+                            thisItem.keystring = thisKey.keystring;
+                        }
+                    }
+                }
             }
         }
         // console.log(this._tiles); //why is this undefined?

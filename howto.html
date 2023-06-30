@@ -9,12 +9,15 @@
 </head>
 <body>
     <div class="textbox">
-    <h1>DUNJOURN 0.0.1:</h1>
+    <h1>DUNJOURN 0.1:</h1>
     <h2>how to make a dungeon:</h2>
     <p>Dunjourn dungeons are simple .txt files in a particular format that the game reads and uses to generate a roguelike-style dungeon for the player to explore. I'll go through the sections of the .txt format in order!</p>
+    <p>If you want to see my current debug/testing dungeon, check out <a href="/dungeons/testDungeon.txt">this .txt file</a>.</p>
     <p>For the time being, sections of the .txt <em>must be in order</em>. Down the line I might revise the dungeon parser to accept the sections in any order or make the formatting more flexible, but that's a low priority.</p>
+    <p>If you want to lightly obscure the dungeon's contents from users you share it with, run it through a rot13 cipher (you can use <a href="https://rot13.com/">a web tool like this one</a>). As long as you prefix the text file's name with 'rot13', the game will run it back through rot13 again before rendering the game.</p>
+    <p>The .txt should have the title on the first line. Afterwards, it's in sections:</p>
     <h3>~map~</h3>
-    <p>The map is the first section of the .txt, and does not require a heading in front of it. Maps are formatted such that each line of text is a row of tiles in the map. For example:</p>
+    <p>The map is the first section of the .txt, and should follow a line that only says 'MAP'. Maps are formatted such that each line of text is a row of tiles in the map. For example:</p>
     <p style="margin-left:30px">########<br>
         #......# <br>
         #......#<br>
@@ -53,6 +56,7 @@
         </p>
         <p>Any other characters you include in your map section will be interpreted by the game as creatures or items. If it can find the character among the items and creatures you provide in the vault and bestiary sections, it will put them where you have them on the map (on top of a floor tile).</p>
         <p>For the time being, I can't figure out how to make characters from right-to-left or top-to-bottom scripts work, but any other unicode character should work (yes, emoji included). Larger ones may get cut off by the edge of the tile, though, or extend into adjacent tiles.</p>
+        <p><u>NEW</u>: I have implemented locking doors/gates and keys to unlock them. To assign a door or gate a key, put (parentheses) after it in the map (in the same row, directly after) and put the identifier (any string) between the parens. Then, when you put a key on the map (see the 'key' item tag below) do the same thing and give it the matching identifier. No parens will result in an unlocked door/gate, and empty parens will result in a lock that wants a key with empty parens as well--you can use that to make generic keys that fit generic locks. Until I implement a neater way of matching keys and locks, you <b>cannot</b> use either paren as the character for an item or creature.</p>
         <h3>~signs~</h3>
         <p>The signs section is simple: it starts with the word SIGNS on its own line, and then is sign texts grouped into dungeon floors by empty lines:</p>
         <p style="margin-left:30px">SIGNS<br>
@@ -63,9 +67,88 @@
             This is the second sign on the second floor.
         </p>
         <p>Sign texts on a given floor are applied left to right, top to bottom. The first floor is the starting floor of the dungeon, and subsequent sections are applied to the floors below. The game currently doesn't support <em>ascending</em> from the starting floor. Well, stairs do, I think, but not signs.</p>
-        <h3>~vault~</h3>
-
+        <h3>~containers~</h3>
+        <p>This section works a lot like signs, but instead of text to go on signs, it's items to go in containers, with each container (across <em>all floors</em>) separated by an empty line:</p>
+        <p style="margin-left:30px">CONTAINERS<br>
+            loaf<br>
+            pebble<br><br>
+            rat corpse</p>
+            <p>This indicates that the first container in the dungeon contains a loaf of bread and a pebble, and the second contains a rat corpse. Containers are ordered like signs, but not subdivided into sections by floor (it's annoying that they're different, I'll make them work the same eventually).</p>
+        <h3>~bestiary~</h3>
+        <p>This is the section that defines creature types, and is the most complex. Creature entries are formatted like so:</p>
+        <div style="margin-left:30px">-goblin:<br>
+            <div style="margin-left:30px">hp: 5<br>
+            damage: 1<br>
+            armor: 0<br>
+            luck: 1<br>
+            bagSlots: 5<br>
+            foes: player<br>
+            friends: goblin, rat<br>
+            sight: 10<br>
+            speed: 1<br>
+            char: g<br>
+            fg: lightgreen<br>
+            bg: black<br>
+            loot: bit of string*100, bit of wire*10<br>
+            tags: vicious, hoarding</div></div>
+            <p>You don't need to indent the creature's properties, I just like to for readability. Properties that are lists (foes, friends, loot, tags) separate items with commas. Each property except the name (after the '-') and char can be omitted, which will assign it a default value when the creature is spawned. I'll explain each property and mention its default value here:
+                <ul>
+                    <li>hp: hit points; when a creature drops to 0 or below, it drops its inventory plus any rolled drops from its loot. Default 1.</li>
+                    <li>damage: how much damage the creature does on a hit. Default 1.</li>
+                    <li>armor: how much damage the creature subtracts from each incoming hit. the player currently does 1 damage and weapons are not implemented, so any integer armor greater than 0 will make monster impossible to damage. Default 0.</li>
+                    <li>luck: a multiplier applied to the creature's critical strike chance. the player also has a luck value (default 1) which is also applied to loot drop rates. Default 1.</li>
+                    <li>bagSlots: how many items the creature can carry. Default 3.</li>
+                    <li>foes: which creatures the creature will treat as creatures--for hostile creatures, this includes the player. some creatures will not always attack foes, depending on circumstances; more on that under tags. Default: just the player.</li>
+                    <li>friends: which creatures the creature will treat as friends--currently, doesn't do anything, but useful for future herding or defending creature tags. Default: just the creature's own type.</li>
+                    <li>sight: creature's detection radius. Default 5.</li>
+                    <li>speed: number of tiles a creature can traverse in a single round. Default 1. </li>
+                    <li>char: what text character is drawn on the map to render the character (and which character the parser will check for when parsing the dungeon string). No default; the game needs this to be unique to know what to spawn.</li>
+                    <li>fg: the base color to draw the char--this will only be fully visible in bright light, so consider a bright color. Default: white.</li>
+                    <li>bg: the background color for the creature when rendered. Default: black. The game will probably eventually use varying background color for something, but doesn't presently.</li>
+                    <li>loot: a list of items the creature may drop on death. Each item is a name (which must be present in your vault section) and a drop chance, appended as * followed by a number, which is the percent drop chance for that item. Default: empty/no loot (since the user must define the items).</li>
+                    <li>tags: creature type tags which define its behavior. I will describe the currently available tags below.</li>
+                </ul>
+            </p>
+            <p>Current tags:
+                <ul>
+                    <li><u>vicious</u> creatures attack the nearest foe they can see; by default, creatures attack foes only if they have been injured (though they can't distinguish between the foe that harmed them and others, yet)</li>
+                    <li><u>cowardly</u> creatures flee the nearest foe they can see; cowardice overcomes viciousness, so a vicious coward is just a coward</li>
+                    <li><u>hoarding</u> creatures pick up <em>any</em> items they can see as long as they don't see any foes and have open inventory slots</li>
+                </ul>
+            </p>
+            <p>Planned tags:
+                <ul>
+                    <li>pliant creatures become nonhostile to a foe (overriding vicious, if they have it) <em>and</em> stop fleeing a foe if that foe is carrying a certain item (by default any in their "wants" property)</li>
+                    <li>wary creatures are nonhostile unless a foe approaches within a certain radius of them (by default, half of their sight radius, rounded up)</li>
+                    <li>protector creatures become hostile if any creature harms one of the creatures listed as its friends</li>
+                    <li>still creatures do not wander; combined with wary, still creatures make good guards for specific locations</li>
+                </ul>
+            </p>
+            <h3>~vault~</h3>
+            <p>The vault is like the bestiary, but defines your dungeon's items instead of its creatures. Formatted thusly:</p>
+            <div style="margin-left:30px">VAULT<br>
+                -pebble:<br>
+                    <div style="margin-left:30px">text: Small, smooth stone.<br>
+                    char: ,<br>
+                    fg: lightgrey<br>
+                    bg: black<br>
+                    tags: throwable<br></div></div>
+            <p>Current item tags are as follows:
+                <ul>
+                    <li><u>container</u> items are containers. They can hold as many items as the value of their 'slots' property, or 3 by default</li>
+                    <li><u>food</u> items are food. They restore HP when eaten, equal to the value of their 'foodValue' property, or 1 by default</li>
+                </ul>
+            </p>
+            <p>Planned item tags:
+                <ul>
+                    <li>key items have a keystring stored in the property of that name, which is checked against any locked doors or gates the player attempts to open; if the strings match, the key is consumed and unlocks the portal</li>
+                    <li>equipment items can be equipped by the player to improve their stats (this one requires me to implement an equipment menu, so it'll be a bit)</li>
+                    <li>throwable items can be thrown by the player to deal damage at range; I would probably want some easier way to throw them than doing it from the normal inventory menu, though...</li>
+                    <li>potion items are foods that do something special when you eat them</li>
+                </ul>
+            </p>
     </div>
-    <p></p>
+   
+    
 </body>
 </html>

@@ -11,7 +11,7 @@ class Entity extends Glyph{
         this._map = null;
         this.actor = properties['actor'] || false;
         this.canDig = properties['canDig'] || false;
-        this.sight = properties['sight'] || 3;
+        this.sight = properties['sight'] || 5;
         this.smell = properties['smell'] || 3;
         // this.setX = function(x) {
         //     this._x = x;

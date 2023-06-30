@@ -1,14 +1,26 @@
+
+//rot13 provided string to decrypt it
+function rot13(message) {
+    return message.replace(/[a-z]/gi, letter => String.fromCharCode(letter.charCodeAt(0) + (letter.toLowerCase() <= 'm' ? 13 : -13)));
+}
+
 //parse dungeon string uploaded by user
 function parseDungeon(input) {
     let file = input.files[0];
     let reader = new FileReader();
+    
     reader.readAsText(file);
     reader.onload = function() {
         // console.log(reader.result); //works!
+        if (file.name.startsWith('rot13')) {
+        let rottenString = rot13(reader.result);
+        loadDungeon(rottenString);
+        } else {
         loadDungeon(reader.result);
-    }
-    reader.onerror = function() {
-        console.log(reader.error);
+        }
+        reader.onerror = function() {
+            console.log(reader.error);
+        }
     }
 }
 
@@ -19,20 +31,23 @@ loadDungeon = function(dungeonString) {
 
     Sundering the heavens from the primordial waters...`)
     updateMessages();
-    let signSplit = dungeonString.split("SIGNS");
+    let titleSplit = dungeonString.split("MAP");
+    let signSplit = titleSplit[1].split("SIGNS");
     let containerSplit = signSplit[1].split("CONTAINERS");
     let bestiarySplit = containerSplit[1].split("BESTIARY");
     let vaultSplit = bestiarySplit[1].split("VAULT");
     let splitDungeonStrings = {
+        title: titleSplit[0],
         map: signSplit[0],
         signs: containerSplit[0],
         containers: bestiarySplit[0],
         bestiary: vaultSplit[0],
         vault: vaultSplit[1]
     }
-    Game.message(`
+    Game.message(`Creating ${splitDungeonStrings.title}!)
     
     Parting primordial waters and raising up the land...`)
+    Game.Dungeon.title = splitDungeonStrings.title.trim();
     updateMessages();    
     // console.log(splitDungeonStrings); //works fine!
     Game.Dungeon.map = splitDungeonStrings.map.trim();
@@ -43,10 +58,9 @@ loadDungeon = function(dungeonString) {
     // signs.splice(0, 1);
     let cleanSigns = [];
     floorSigns.forEach(function(floor) {
-        console.log(floor)
-        let thisFloor = [];
+        // console.log(floor)
         let signs = floor.trim().split("\r\n");
-        console.log(signs);
+        // console.log(signs);
         cleanSigns.push(signs);
     })
     // console.log(cleanSigns); //whew, works
@@ -83,7 +97,7 @@ loadDungeon = function(dungeonString) {
             if (i === 0) {
                 //clean the name of the ": "
                 trimmedMonster[i] = trimmedMonster[i].split(":")[0];
-                console.log(trimmedMonster[i]);
+                // console.log(trimmedMonster[i]);
                 cleanBestiary[trimmedMonster[i]] = {
                     name: trimmedMonster[i],
                 };
@@ -154,5 +168,8 @@ loadDungeon = function(dungeonString) {
 
     Filling the caverns with treasures...`)
     updateMessages();
+    //get filepicker element and set it to "now playing:" and the dungeon title
+    let filePicker = document.getElementById("filepicker");
+    filePicker.innerHTML = `now playing: ${Game.Dungeon.title}`;
     // console.log(Game.Dungeon); //looks fine, not sure what's wrong with the builder
 }

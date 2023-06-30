@@ -132,11 +132,44 @@ class Player extends Entity {
         //     //console.log('dug terrrain!')
         //     return true;
         } else if (tile instanceof DoorTile || tile instanceof GateTile) {
-            tile.toggle();
-            Game.message(`You open it.`);
-            return true;
+
+            if (tile.locked) {
+                //iterate over items in inventory
+                for (let i = 0; i < this.bag.length; i++) {
+                    //if item is key, check keystring against lockstring
+                    if (this.bag[i].keystring === tile.lockstring) {
+                        //if key matches, unlock door
+                        tile.locked = false;
+                        Game.message(`You unlock it with your ${this.bag[i].name}.`);
+                        //remove key from inventory
+                        this.bag.splice(i, 1);
+                        return true;
+                    }
+                }
+                //if no key matches, door remains locked
+                Game.message(`It's locked. There must be a key somewhere...`);
+                return false;
+
+            }  else {
+                tile.toggle();
+                Game.message(`You open it.`);
+                return true;    
+            }
+        } else if (tile instanceof BrazierTile) {
+                tile.toggle();
+                switch (tile.lit) {
+                    case true:
+                        Game.message(`You light the brazier.`);
+                        break;
+                    case false:
+                        Game.message(`You extinguish the brazier.`);
+                        break;
+                }
+                return true;
+        } else {
+            return false;
         }
-        return false;
+        
     }
     act() {
         // Detect if the game is over

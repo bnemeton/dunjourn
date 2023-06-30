@@ -3,7 +3,7 @@ class Glyph {
         // Instantiate properties to default if they weren't passed
         properties = properties || {};
         // console.log(properties);
-        this._char = properties['char'] || '';
+        this._char = properties['char'] || '?';
         this._foreground = properties['fg'] || 'white';
         this._background = properties['bg'] || 'black';
         this.text = properties['text'] || '';

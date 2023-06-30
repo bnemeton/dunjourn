@@ -8,26 +8,15 @@ class Enemy extends Entity {
         this.armor = properties['armor'] || 0;
         this.damage = properties['damage'] || 1;
         this.luck = properties['luck'] || 1.0;
-        this.bagSlots = properties['bagSlots'] || 5;
+        this.bagSlots = properties['bagSlots'] || 3;
         this.attacker = properties['attacker'] || true;
         // this.corpseRate = properties['corpseRate'] || 0;
         this.foes = properties['foes'] || ['branded'];
         this.wants = properties['wants'] || [];
-        this.friends = properties["friends"] || [];
+        this.friends = properties["friends"] || [this.name];
         this.maxSpeed = properties['maxSpeed'] || 1;
         this.tags = properties['tags'] || [];
-        this.loot = properties['loot'] || {
-            drops: [
-                {
-                    name: "bit of string",
-                    chance: 75
-                },
-                {
-                    name: "bit of wire",
-                    chance: 10
-                }
-            ]
-        };
+        this.loot = properties['loot'] || {};
         
     }
     wander() {
@@ -246,9 +235,9 @@ class Enemy extends Entity {
     dropLoot() {
         let dropNames = [];
         // for each item in this.loot.drops, add if roll below drop chance
-        for (let i = 0; i < this.loot.drops.length; i++) {
-            if (Math.round(Math.random() * 100) < this.loot.drops[i].chance) {
-                dropNames.push(this.loot.drops[i].name);
+        for (let i = 0; i < this.loot.length; i++) {
+            if (Math.round(Math.random() * 100) < this.loot[i].chance) {
+                dropNames.push(this.loot[i].name);
             }
         }
         // for each item in dropNames, create item and drop

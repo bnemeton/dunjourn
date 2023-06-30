@@ -87,7 +87,7 @@ class SignTile extends Tile {
 }
 
 class DoorTile extends Tile {
-    constructor() {
+    constructor(props) {
         super({
             char: '□',
             fg: 'tan',
@@ -96,6 +96,8 @@ class DoorTile extends Tile {
             text: "This is a closed door."
         })
         this.closed = true;
+        this.locked = props['locked'] || false;
+        this.lockstring = props['lockstring'] || '';
     }
     toggle() {
         this.closed = !this.closed;
@@ -115,7 +117,7 @@ class DoorTile extends Tile {
 }
 
 class GateTile extends Tile {
-    constructor() {
+    constructor(props) {
         super({
             char: '+',
             fg: 'tan',
@@ -124,6 +126,8 @@ class GateTile extends Tile {
             text: "This is a closed gate, but you can see through its bars."
         })
         this.closed = true;
+        this.locked = props['locked'] || false;
+        this.lockstring = props['lockstring'] || '';
     }
     toggle() {
         this.closed = !this.closed;
@@ -136,6 +140,36 @@ class GateTile extends Tile {
             // console.log(this.char); //yeah this is fine... so why is it still rendering +?
             this.text = "This is an open gate.";
             this.isWalkable = true;
+        }
+    }
+}
+
+class BrazierTile extends Tile {
+    constructor(props) {
+        super({
+            char: '^',
+            fg: 'orange',
+            isWalkable: false,
+            isOpaque: false,
+            text: "This is a brazier. It blazes brightly."
+        })
+        this.lit = true;
+        this.light = props['light']
+    }
+    toggle() {
+        this.lit = !this.lit;
+        if (this.lit) {
+            this._char = '^';
+            this.fg = 'orange';
+            this.text = "This is a brazier. It blazes brightly."
+            // this.isWalkable = false;
+            this.light.show();
+        } else {
+            this._char = '^';
+            this.fg = 'slategrey';
+            this.text = "This is a brazier. It is dark."
+            // this.isWalkable = false;
+            this.light.hide();
         }
     }
 }
