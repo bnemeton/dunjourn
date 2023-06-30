@@ -57,7 +57,7 @@ Game.Screen.startScreen = {
     render: function(displays) {
         displays.main.drawText(16, 6, foreColor + "DUNJOURN 0.1");
         displays.main.drawText(16, 8, ashColor + `
-        load a dungeon with file <a href="https://rot13.com/">picker below, then:
+        load a dungeon with the file picker below, then:
         press [enter] to start"`);
         displays.main.drawText(16, 12, ashColor + `
                                             there's no real game here yet! still working on basic features.
