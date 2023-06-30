@@ -176,13 +176,13 @@ class Builder {
                         // console.log(`found a door or gate at ${i},${j},${z}`);
                         // console.log(this._tiles[z][i][j]);
                         let thisTile = this._tiles[z][i][j];
-                        // console.log(thisTile);
+                        console.log(thisTile);
                         // console.log(this._items);
                         for (var key in Game.Dungeon.keys) {
                             let thisKey = Game.Dungeon.keys[key];
                             // console.log(thisKey) //keys are here
                             if (thisKey.x == j && thisKey.y == i && thisKey.z == z) {
-                                // console.log('Found a matching key for a door or gate.')
+                                console.log('Found a matching keystring for a door or gate.')
                                 // console.log(thisKey);
 
                                 thisTile.lockstring = thisKey.keystring;
@@ -197,15 +197,15 @@ class Builder {
             for (var i = 0; i < this._items.length; i++) {
                 let thisItem = this._items[i];
                 if (thisItem.key) {
-                    console.log('Found a key, looking for matching keystring in Game.Dungeon.keys...')
-                    console.log(`key:`)
-                    console.log(thisItem);
+                    // console.log('Found a key, looking for matching keystring in Game.Dungeon.keys...')
+                    // console.log(`key:`)
+                    // console.log(thisItem);
                     //check Game.Dungeon.keys for matching coords
                     for (key in Game.Dungeon.keys) {
                         let thisKey = Game.Dungeon.keys[key];
                         // console.log(thisKey)
                         if (thisKey.x == thisItem.x && thisKey.y == thisItem.y && thisKey.z == thisItem.z) {
-                            console.log('...found the matching keystring!')
+                            // console.log('...found the matching keystring!')
                             thisItem.keystring = thisKey.keystring;
                         }
                     }

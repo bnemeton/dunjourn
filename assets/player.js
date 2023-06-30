@@ -137,7 +137,7 @@ class Player extends Entity {
                 //iterate over items in inventory
                 for (let i = 0; i < this.bag.length; i++) {
                     //if item is key, check keystring against lockstring
-                    if (this.bag[i].keyString === tile.lockString) {
+                    if (this.bag[i].keystring === tile.lockstring) {
                         //if key matches, unlock door
                         tile.locked = false;
                         Game.message(`You unlock it with your ${this.bag[i].name}.`);
