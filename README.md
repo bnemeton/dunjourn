@@ -1,7 +1,7 @@
 
 # DUNJOURN 0.0.1
 
-A gradual conversion of my unfinished roguelike project, Flamecant, into an experimental social media medium where users share minimal dungeons (saved as text files) with one another.
+A gradual conversion of my unfinished roguelike project, Flamecant, into an experimental social medium where users share minimal dungeons (saved as text files) with one another.
 Don't expect much yet, I'm still working on setting up the minimal static version of this concept. For an extremely loose plan or outline, see /outline.
 Dunjourn uses rot.js, a set of javascript libraries for roguelike games, because that's what I've been using for Flamecant.
 
